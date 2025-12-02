@@ -1,2 +1,29 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<div class="row">
+    <div class="col-md-8 offset-md-2 text-center">
+        <h1 class="display-4">Explore Anime Data</h1>
+        <p class="lead">Search across 28k animes and 124M ratings</p>
+
+        <div class="input-group mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Enter anime title (e.g. Naruto)...">
+            <button class="btn btn-primary" type="button" onclick="searchAnime()">Search</button>
+        </div>
+    </div>
+</div>
+
+<div id="resultsArea" class="row mt-4"></div>
+
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl"> <div class="modal-content">
+
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">Anime Title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body" id="modalBody">
+            Loading...
+        </div>
+
+    </div>
+    </div>
+</div>

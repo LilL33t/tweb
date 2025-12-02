@@ -1,0 +1,56 @@
+const axios = require('axios');
+
+// --- CONFIGURATION ---
+// We MUST use 127.0.0.1 to avoid connection errors
+const JPA_URL  = 'http://127.0.0.1:8080/api';
+const EXP_URL = 'http://127.0.0.1:3001/api';
+
+exports.getFullAnimeDetails = async (id) => {
+
+    try {
+
+        const animeResponse = await axios.get(`${JPA_URL}/animes/${id}`);
+        const animeData = animeResponse.data;
+
+
+        const [stats, reviews, recs] = await Promise.all([
+            // Stats
+            axios.get(`${EXP_URL}/stats/${id}`)
+                .then(res => res.data)
+                .catch(err => {
+                    console.error(" -> Stats failed:", err.message);
+                    return {}; // Return empty stats if failed
+                }),
+
+            // Reviews
+            axios.get(`${EXP_URL}/ratings/${id}`)
+                .then(res => res.data)
+                .catch(err => {
+                    console.error(" -> Reviews failed:", err.message);
+                    return []; // Return empty reviews if failed
+                }),
+
+            // Recommendations
+            axios.get(`${EXP_URL}/recommendations/${id}`)
+                .then(res => res.data)
+                .catch(err => {
+                    console.error(" -> Recs failed:", err.message);
+                    return []; // Return empty recs if failed
+                })
+        ]);
+
+        console.log(`Success! Merging data for ID ${id}`);
+
+        // 3. Merge and Return
+        return {
+            animeData: animeData, // Title, Synopsis, Image
+            stats: stats,         // Watching count
+            ratings: reviews,     // User reviews
+            recommendations: recs // "If you like this..."
+        };
+
+    } catch (error) {
+        console.error(`CRITICAL ERROR for ID ${id}:`, error.message);
+        return null;
+    }
+};
