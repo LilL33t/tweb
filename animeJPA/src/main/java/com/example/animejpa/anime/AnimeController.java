@@ -1,5 +1,9 @@
 package com.example.animejpa.anime;
 
+import com.example.animejpa.dto.CharacterRoleDTO;
+import com.example.animejpa.dto.PersonPositionDTO;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,5 +28,17 @@ public class AnimeController {
     @GetMapping("/search")
     public List<Anime> searchAnimes(@RequestParam String title) {
         return animeService.searchAnimes(title);
+    }
+
+    // GET /api/animes/1/characters
+    @GetMapping("/{id}/characters")
+    public List<CharacterRoleDTO> getCharacters(@PathVariable Integer id) {
+        return animeService.getCharacters(id);
+    }
+
+    // GET /api/animes/1/staff
+    @GetMapping("/{id}/staff")
+    public List<PersonPositionDTO> getStaff(@PathVariable Integer id) {
+        return animeService.getStaff(id);
     }
 }

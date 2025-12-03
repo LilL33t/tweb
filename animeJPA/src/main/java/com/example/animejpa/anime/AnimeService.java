@@ -1,5 +1,8 @@
 package com.example.animejpa.anime;
 
+import com.example.animejpa.dto.CharacterRoleDTO;
+import com.example.animejpa.dto.PersonPositionDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +20,7 @@ public class AnimeService {
      * Fetch a single Anime by its MAL ID.
      * Returns null if not found (you could also throw an exception here).
      */
-    public Anime getAnimeById(Integer id) {
+    public Anime getAnimeById(Integer id){
         Optional<Anime> result = animeRepository.findById(id);
         return result.orElse(null);
     }
@@ -26,7 +29,16 @@ public class AnimeService {
      * Search for animes by title.
      * Returns a list of matches.
      */
-    public List<Anime> searchAnimes(String title) {
+    public List<Anime> searchAnimes(String title){
         return animeRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+
+    public List<CharacterRoleDTO> getCharacters(Integer id){
+        return animeRepository.findCharactersByAnimeId(id);
+    }
+
+    public List<PersonPositionDTO> getStaff(Integer id){
+        return animeRepository.findStaffByAnimeId(id);
     }
 }
