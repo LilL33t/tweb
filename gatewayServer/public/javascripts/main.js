@@ -70,7 +70,7 @@ async function loadDetails(id) {
                          style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" class="me-3">
                     <div>
                         <strong class="d-block">${item.name}</strong>
-                        <small class="text-muted">${type === 'char' ? item.role : item.position}</small>
+                        <small class="text-muted">${type === 'char' ? item.role : item.job}</small>
                     </div>
                 </div>
             `).join('');
