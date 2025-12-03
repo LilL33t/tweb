@@ -22,12 +22,12 @@ exports.getFullAnimeDetails = async (id) => {
                     return {}; // Return empty stats if failed
                 }),
 
-            // Reviews
+            // Ratings
             axios.get(`${EXP_URL}/ratings/${id}`)
                 .then(res => res.data)
                 .catch(err => {
                     console.error(" -> Reviews failed:", err.message);
-                    return []; // Return empty reviews if failed
+                    return []; // Return empty ratings if failed
                 }),
 
             // Recommendations
