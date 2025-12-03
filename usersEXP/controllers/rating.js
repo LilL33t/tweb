@@ -9,7 +9,7 @@ exports.getRatingByAnime = async (req, res) => {
         //logs for debug
         console.log("2. Querying database...");
 
-        const ratings = await Rating.find({anime_id: animeId, score: {$gt: 0} }).sort({score: -1}).limit(50);
+        const ratings = await Rating.find({anime_id: animeId, score: {$gt: 0} }).sort({score: -1}).limit(1000);
         //-> only valid scores >= (gt) 0, sorted by score (10--->1), limit number of "grabbed" records to N = 50
 
         console.log("3. Database answered:", ratings); // LOG 3
