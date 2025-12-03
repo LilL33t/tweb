@@ -32,7 +32,7 @@ async function searchAnime() {
                             <p class="card-text text-muted small">${anime.genres || 'Genre N/A'}</p>
                             <div class="mt-auto">
                                 <button class="btn btn-primary w-100" onclick="loadDetails(${anime.malId})">
-                                    Analyze Data
+                                    See more
                                 </button>
                             </div>
                         </div>
