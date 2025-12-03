@@ -52,81 +52,115 @@ async function searchAnime() {
 async function loadDetails(id) {
     const modalBody = document.getElementById('modalBody');
     const modalTitle = document.getElementById('modalTitle');
-
-    // Open Modal immediately showing loading state
     const myModal = new bootstrap.Modal(document.getElementById('detailsModal'));
     myModal.show();
-
-    modalBody.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary"></div><p class="mt-2">Aggregating Data...</p></div>';
+    modalBody.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary"></div></div>';
 
     try {
-        // MATCHES YOUR GATEWAY ROUTE: router.get('/anime/:id', ...)
         const res = await axios.get(`/api/anime/${id}`);
         const data = res.data;
-
-        // CRITICAL: Based on your JSON, the title is inside 'animeData'
         modalTitle.innerText = data.animeData.title;
 
-        // Build HTML
+        // Helper to render Cast/Staff lists
+        const renderList = (items, type) => {
+            if (!items || items.length === 0) return '<p class="text-muted">No data available.</p>';
+            return items.map(item => `
+                <div class="d-flex align-items-center mb-2 border-bottom pb-2">
+                    <img src="${item.imageUrl || 'https://via.placeholder.com/50'}" 
+                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" class="me-3">
+                    <div>
+                        <strong class="d-block">${item.name}</strong>
+                        <small class="text-muted">${type === 'char' ? item.role : item.position}</small>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        // Helper to render Score Bars (10 to 1)
+        // We map an array [10, 9, ... 1] to HTML progress bars
+        const renderScoreDistribution = () => {
+            const scores = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+            return scores.map(score => {
+                // Access dynamic properties: stats.score_10_votes, etc.
+                const votes = data.stats[`score_${score}_votes`] || 0;
+                const pct = data.stats[`score_${score}_percentage`] || 0;
+
+                // Color coding: High=Green, Mid=Yellow, Low=Red
+                let color = 'danger';
+                if (score >= 8) color = 'success';
+                else if (score >= 5) color = 'warning';
+
+                return `
+                    <div class="d-flex align-items-center mb-1" style="font-size: 0.9rem;">
+                        <span class="fw-bold me-2" style="width: 20px;">${score}</span>
+                        <div class="progress flex-grow-1" style="height: 10px;">
+                            <div class="progress-bar bg-${color}" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="ms-2 text-muted small" style="width: 80px; text-align: right;">
+                            ${pct}% <span class="text-secondary">(${votes})</span>
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        };
+
         const html = `
-            <div class="row">
-                <div class="col-md-4">
-                    <img src="${data.animeData.imageUrl}" class="img-fluid rounded mb-3 shadow">
-                    
-                    <div class="card bg-light mb-3">
-                        <div class="card-header fw-bold">Global Statistics</div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>Watching:</span> <strong>${data.stats.watching || 0}</strong>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>Completed:</span> <strong>${data.stats.completed || 0}</strong>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>Total Users:</span> <strong>${data.stats.total || 0}</strong>
-                            </li>
-                             <li class="list-group-item d-flex justify-content-between">
-                                <span>Dropped:</span> <strong class="text-danger">${data.stats.dropped || 0}</strong>
-                            </li>
-                        </ul>
+            <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview" type="button">Overview</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#cast" type="button">Characters (${data.characters.length})</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#staff" type="button">Staff (${data.staff.length})</button></li>
+            </ul>
+
+            <div class="tab-content">
+                
+                <div class="tab-pane fade show active" id="overview">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="${data.animeData.imageUrl}" class="img-fluid rounded mb-3 shadow">
+                            <div class="card bg-light">
+                                <div class="card-header fw-bold">User Status</div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between"><span>Watching:</span> <strong>${data.stats.watching || 0}</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span>Completed:</span> <strong>${data.stats.completed || 0}</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span>On Hold:</span> <strong>${data.stats.on_hold || 0}</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span>Dropped:</span> <strong class="text-danger">${data.stats.dropped || 0}</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <h5>Synopsis</h5>
+                            <p class="text-secondary small">${data.animeData.synopsis || "No synopsis available."}</p>
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">Score Stats</h5>
+                                <span class="badge bg-primary">Total Votes: ${data.stats.total || 0}</span>
+                            </div>
+                            
+                            <div class="p-3 border rounded bg-light">
+                                ${renderScoreDistribution()}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-8">
-                    <h5>Synopsis</h5>
-                    <p class="text-secondary">${data.animeData.synopsis || "No synopsis available."}</p>
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0">Recent Top Reviews</h5>
-                        <span class="badge bg-primary">Avg Score: ${data.stats.score_10_percentage ? "High" : "N/A"}</span>
-                    </div>
-
-                    <div style="max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 5px;">
-                        ${data.ratings && data.ratings.length > 0 ?
-            data.ratings.map(r => `
-                                <div class="card mb-2 border-0 border-bottom">
-                                    <div class="card-body py-2">
-                                        <div class="d-flex justify-content-between">
-                                            <h6 class="card-title mb-0 fw-bold text-dark">${r.username}</h6>
-                                            <span class="badge bg-${getScoreColor(r.score)}">Score: ${r.score}</span>
-                                        </div>
-                                        <small class="text-muted">Status: ${r.status}</small>
-                                    </div>
-                                </div>
-                            `).join('')
-            : '<p class="text-center text-muted mt-3">No reviews found.</p>'
-        }
-                    </div>
+                <div class="tab-pane fade" id="cast">
+                    <div class="row"><div class="col-12" style="max-height: 500px; overflow-y: auto;">${renderList(data.characters, 'char')}</div></div>
                 </div>
+
+                <div class="tab-pane fade" id="staff">
+                    <div class="row"><div class="col-12" style="max-height: 500px; overflow-y: auto;">${renderList(data.staff, 'staff')}</div></div>
+                </div>
+
             </div>
         `;
-
         modalBody.innerHTML = html;
 
     } catch (err) {
         console.error(err);
-        modalBody.innerHTML = '<div class="alert alert-danger">Failed to load details. Check console for error.</div>';
+        modalBody.innerHTML = '<div class="alert alert-danger">Error loading details.</div>';
     }
 }
 

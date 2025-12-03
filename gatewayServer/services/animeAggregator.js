@@ -13,7 +13,7 @@ exports.getFullAnimeDetails = async (id) => {
         const animeData = animeResponse.data;
 
 
-        const [stats, reviews, recs] = await Promise.all([
+        const [stats, reviews, recs, characters, staff] = await Promise.all([
             // Stats
             axios.get(`${EXP_URL}/stats/${id}`)
                 .then(res => res.data)
@@ -36,17 +36,35 @@ exports.getFullAnimeDetails = async (id) => {
                 .catch(err => {
                     console.error(" -> Recs failed:", err.message);
                     return []; // Return empty recs if failed
-                })
+                }),
+
+            //Cast
+            axios.get(`${JPA_URL}/animes/${id}/characters`)
+                .then(res => res.data)
+                .catch(err => {
+                console.error(" -> Recs failed:", err.message);
+                return []; // Return empty recs if failed
+                }),
+
+            //Staff
+            axios.get(`${JPA_URL}/animes/${id}/staff`)
+                .then(res => res.data)
+                .catch(err => {
+                    console.error(" -> Recs failed:", err.message);
+                    return []; // Return empty recs if failed
+                }),
         ]);
 
         console.log(`Success! Merging data for ID ${id}`);
 
         // 3. Merge and Return
         return {
-            animeData: animeData, // Title, Synopsis, Image
-            stats: stats,         // Watching count
-            ratings: reviews,     // User reviews
-            recommendations: recs // "If you like this..."
+            animeData: animeData,
+            stats: stats,
+            ratings: reviews,
+            recommendations: recs,
+            characters: characters,
+            staff: staff,
         };
 
     } catch (error) {
