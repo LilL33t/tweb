@@ -1,0 +1,129 @@
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">{{anime.title}}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-3">
+            <img src="{{anime.imageUrl}}" class="img-fluid rounded shadow mb-3" style="width: 100%;">
+
+            <div class="card mb-3">
+                <div class="card-header fw-bold">Statistics</div>
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item"><strong>Type:</strong> {{anime.type}}</li>
+                    <li class="list-group-item"><strong>Episodes:</strong> {{anime.episodes}}</li>
+                    <li class="list-group-item"><strong>Status:</strong> {{anime.status}}</li>
+                    <li class="list-group-item"><strong>Favorites:</strong> {{anime.favorites}}</li>
+
+                    <li class="list-group-item"><strong>Score:</strong> <span class="badge bg-warning text-dark">{{anime.score}}</span></li>
+                    <li class="list-group-item"><strong>Watching:</strong> {{stats.watching}}</li>
+                    <li class="list-group-item"><strong>Completed:</strong> {{stats.completed}}</li>
+                    <li class="list-group-item"><strong>Total Users:</strong> {{stats.total}}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h1 class="display-5">{{anime.title}}</h1>
+            <p class="lead" style="font-size: 1rem;">{{anime.synopsis}}</p>
+
+            <div class="mb-4 py-2 border-top border-bottom">
+                <div class="row">
+                    <div class="col-auto pe-4">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Source</small>
+                        <div class="fw-medium">{{anime.source}}</div>
+                    </div>
+
+                    <div class="col-auto pe-4 border-start">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Rating</small>
+                        <div class="fw-medium">{{anime.rating}}</div>
+                    </div>
+
+                    <div class="col-md border-start">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Producers</small>
+                        <div class="fw-medium text-truncate">
+                            {{#if anime.producers}}
+                                {{anime.producers}}
+                            {{else}}
+                                <span class="text-muted fst-italic">None found</span>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-light mb-4 border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Score Distribution</h5>
+                    {{#each scoreDistribution}}
+                        <div class="d-flex align-items-center mb-1" style="font-size: 0.9rem;">
+                            <span class="fw-bold me-2" style="width: 20px;">{{this.score}}</span>
+                            <div class="progress flex-grow-1" style="height: 10px;">
+                                <div class="progress-bar bg-{{this.color}}" style="width: {{this.percentage}}%"></div>
+                            </div>
+                            <span class="ms-2 text-muted small" style="width: 80px; text-align: right;">
+                            {{this.percentage}}%
+                        </span>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#voice">Voice Actors</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#staff">Staff</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#chars">Characters</button></li>
+            </ul>
+
+            <div class="tab-content border border-top-0 p-3 bg-white rounded-bottom">
+
+                <div class="tab-pane fade show active" id="voice">
+                    <div class="row">
+                        {{#each voices}}
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%;" class="me-2">
+                                    <div>
+                                        <strong>{{this.personName}}</strong> <small class="text-muted">({{this.language}})</small>
+                                        <br><small>as {{this.characterName}}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="staff">
+                    <div class="row">
+                        {{#each staff}}
+                            <div class="col-md-6 mb-2 d-flex align-items-center">
+                                <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%;" class="me-2">
+                                <div>
+                                    <strong>{{this.name}}</strong>
+                                    <br><small class="text-muted">{{this.job}}</small>
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="chars">
+                    <div class="row">
+                        {{#each characters}}
+                            <div class="col-md-6 mb-2 d-flex align-items-center">
+                                <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%;" class="me-2">
+                                <div>
+                                    <strong>{{this.name}}</strong>
+                                    <br><small class="text-muted">{{this.role}}</small>
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

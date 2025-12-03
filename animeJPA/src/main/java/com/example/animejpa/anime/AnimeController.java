@@ -2,6 +2,7 @@ package com.example.animejpa.anime;
 
 import com.example.animejpa.dto.CharacterRoleDTO;
 import com.example.animejpa.dto.PersonPositionDTO;
+import com.example.animejpa.dto.VoiceActorDTO;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,5 +41,11 @@ public class AnimeController {
     @GetMapping("/{id}/staff")
     public List<PersonPositionDTO> getStaff(@PathVariable Integer id) {
         return animeService.getStaff(id);
+    }
+
+    // GET /api/animes/1/voices
+    @GetMapping("/{id}/voices")
+    public List<VoiceActorDTO> getVoiceActors(@PathVariable Integer id) {
+        return animeService.getVoiceActors(id);
     }
 }

@@ -2,6 +2,7 @@ package com.example.animejpa.anime;
 
 import com.example.animejpa.dto.CharacterRoleDTO;
 import com.example.animejpa.dto.PersonPositionDTO;
+import com.example.animejpa.dto.VoiceActorDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,5 +41,9 @@ public class AnimeService {
 
     public List<PersonPositionDTO> getStaff(Integer id){
         return animeRepository.findStaffByAnimeId(id);
+    }
+
+    public List<VoiceActorDTO> getVoiceActors(Integer id){
+        return animeRepository.findVoiceActorsByAnimeId(id);
     }
 }

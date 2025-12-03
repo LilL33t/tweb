@@ -24,21 +24,21 @@ async function searchAnime() {
         animes.forEach(anime => {
             // Note: Java returns 'malId', 'title', 'imageUrl'
             const card = `
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm hover-card">
-                        <img src="${anime.imageUrl}" class="card-img-top" style="height: 300px; object-fit: cover;" alt="poster">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">${anime.title}</h5>
-                            <p class="card-text text-muted small">${anime.genres || 'Genre N/A'}</p>
-                            <div class="mt-auto">
-                                <button class="btn btn-primary w-100" onclick="loadDetails(${anime.malId})">
-                                    See more
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm hover-card">
+            <img src="${anime.imageUrl}" class="card-img-top" style="height: 300px; object-fit: cover;">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">${anime.title}</h5>
+                <p class="card-text text-muted small">${anime.genres || 'Genre N/A'}</p>
+                <div class="mt-auto">
+                    <a href="/anime/${anime.malId}" class="btn btn-primary w-100">
+                        See more
+                    </a>
                 </div>
-            `;
+            </div>
+        </div>
+    </div>
+`;
             resultsDiv.innerHTML += card;
         });
 
@@ -98,7 +98,7 @@ async function loadDetails(id) {
                             <div class="progress-bar bg-${color}" style="width: ${pct}%"></div>
                         </div>
                         <span class="ms-2 text-muted small" style="width: 80px; text-align: right;">
-                            ${pct}% <span class="text-secondary">(${votes})</span>
+                            ${pct}% 
                         </span>
                     </div>
                 `;

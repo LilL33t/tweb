@@ -40,6 +40,24 @@ public class Anime{
     @Column(name = "year")
     private Integer year;
 
+    @Column(name = "season")
+    private String season;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "favorites")
+    private String favorites;
+
+    @Column(name = "source")
+    private String source;
+
+    @Column(name = "rating")
+    private String rating;
+
+    @Column(name = "producers")
+    private String producers;
+
     public Anime() {
     }
 
@@ -129,6 +147,54 @@ public class Anime{
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getSeason() {
+        return season;
+    }
+
+    public void setSeason(String season){
+        this.season = season;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status){
+        this.status = status;
+    }
+
+    public String getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(String favorites) {
+        this.favorites = favorites;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public String getProducers() {
+        return producers;
+    }
+
+    public void setProducers(String producers) {
+        this.producers = producers;
     }
 
     // =========================================================
