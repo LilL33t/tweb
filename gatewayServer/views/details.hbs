@@ -21,6 +21,7 @@
                     <li class="list-group-item"><strong>Watching:</strong> {{stats.watching}}</li>
                     <li class="list-group-item"><strong>Completed:</strong> {{stats.completed}}</li>
                     <li class="list-group-item"><strong>Total Views:</strong> {{stats.total}}</li>
+
                 </ul>
             </div>
         </div>
@@ -41,6 +42,11 @@
                         <div class="fw-medium">{{anime.rating}}</div>
                     </div>
 
+                    <div class="col-auto pe-4 border-start">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Licensors</small>
+                        <div class="fw-medium">{{anime.licensors}}</div>
+                    </div>
+
                     <div class="col-md border-start">
                         <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Producers</small>
                         <div class="fw-medium text-truncate">
@@ -51,6 +57,9 @@
                             {{/if}}
                         </div>
                     </div>
+
+
+
                 </div>
             </div>
             <div class="card bg-light mb-4 border-0">

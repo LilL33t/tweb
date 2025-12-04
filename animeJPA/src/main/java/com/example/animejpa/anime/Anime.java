@@ -58,6 +58,10 @@ public class Anime{
     @Column(name = "producers")
     private String producers;
 
+
+    @Column(name = "licensors")
+    private String licensors;
+
     public Anime() {
     }
 
@@ -195,6 +199,14 @@ public class Anime{
 
     public void setProducers(String producers) {
         this.producers = producers;
+    }
+
+    public String getLicensors() {
+        return licensors;
+    }
+
+    public void setLicensors(String licensors) {
+        this.licensors = licensors;
     }
 
     // =========================================================
