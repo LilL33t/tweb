@@ -191,8 +191,6 @@ document.addEventListener("DOMContentLoaded", function() {
     setFieldValue('genre');
     setFieldValue('rating');
     setFieldValue('min_score');
-    setFieldValue('year');      // Works for input numbers too
-    setFieldValue('favorites'); // Works for input numbers too
     // Title 'q' is already handled by value="{{searchParams.q}}" in the HBS, but this doesn't hurt.
     setFieldValue('q');
 });

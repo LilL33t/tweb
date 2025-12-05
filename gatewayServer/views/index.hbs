@@ -1,26 +1,40 @@
-<div class="container mt-5">
+<form action="/search" method="GET">
 
-    <div class="row mb-5">
-        <div class="col-md-10 offset-md-1">
-            <div class="text-center mb-4">
-                <h1 class="display-4 fw-bold">Explore Anime Data</h1>
-                <p class="lead text-muted">Search across 28k animes and 124M ratings</p>
-            </div>
+    <header class="sticky-top shadow-sm" style="z-index: 1020;">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
 
-            <form action="/search" method="GET" class="card p-4 shadow-sm border-0 bg-light">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#searchControls">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-                <div class="input-group input-group-lg mb-3">
-                    <input type="text" name="q" class="form-control" placeholder="Enter anime title..." value="{{searchParams.q}}">
-                    <button class="btn btn-primary px-4" type="submit">Search</button>
+                <div class="collapse navbar-collapse" id="searchControls">
+                    <div class="d-flex flex-column flex-lg-row w-100 gap-2 align-items-lg-center ms-lg-4">
+
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+                            <input type="text" name="q" class="form-control border-0" placeholder="Search 28k+ anime..." value="{{searchParams.q}}">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+
+                        <a href="/" class="btn btn-outline-light text-nowrap">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset
+                        </a>
+
+                        <button class="btn btn-secondary d-lg-none mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterBar">
+                            Show Filters
+                        </button>
+                    </div>
                 </div>
-                <a href="/" class="btn btn-secondary ms-2">
-                    <i class="bi bi-arrow-counterclockwise"></i> Reset
-                </a>
+            </div>
+        </nav>
 
-                <div class="row g-2">
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold text-muted">Genre</label>
-                        <select name="genre" class="form-select form-select-sm">
+        <div id="filterBar" class="bg-light border-bottom collapse d-lg-block">
+            <div class="container py-2">
+                <div class="row g-2 align-items-center">
+
+                    <div class="col-6 col-md-3">
+                        <select name="genre" class="form-select form-select-sm fw-bold text-secondary">
                             <option value="">All Genres</option>
                             <option value="Action">Action</option>
                             <option value="Adventure">Adventure</option>
@@ -45,9 +59,9 @@
                             <option value="Suspense">Suspense</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold text-muted">Rating</label>
-                        <select name="rating" class="form-select form-select-sm">
+
+                    <div class="col-6 col-md-3">
+                        <select name="rating" class="form-select form-select-sm fw-bold text-secondary">
                             <option value="">Any Rating</option>
                             <option value="PG - Children">PG - Children</option>
                             <option value="PG-13 - Teens 13 or older">PG-13 - Teens 13 or older</option>
@@ -57,10 +71,10 @@
                             <option value="R+ - Mild Nudity">R+ - Mild Nudity</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label small fw-bold text-muted">Min Score</label>
-                        <select name="min_score" class="form-select form-select-sm">
-                            <option value="">Any</option>
+
+                    <div class="col-6 col-md-2">
+                        <select name="min_score" class="form-select form-select-sm fw-bold text-secondary">
+                            <option value="">Min Score: Any</option>
                             <option value="9">9+</option>
                             <option value="8">8+</option>
                             <option value="7">7+</option>
@@ -68,55 +82,77 @@
                             <option value="5">5+</option>
                         </select>
                     </div>
+
+                    <div class="col-6 col-md-2 d-grid">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Apply Filters</button>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
+    </header>
+</form>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-secondary">
+            {{#if searchParams}}Search Results{{else}}Top Ranked Anime{{/if}}
+        </h4>
+        {{#if topAnime}}
+            <span class="badge bg-light text-dark border">{{topAnime.length}} Results</span>
+        {{/if}}
     </div>
 
     {{#if topAnime}}
-        <div id="default-suggestions" class="mb-5">
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+            {{#each topAnime}}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 hover-card">
 
-            <h3 class="mb-4">
-                {{#if searchParams}}Search Results{{else}}Top Ranked Anime{{/if}}
-            </h3>
+                        <div style="height: 320px; overflow: hidden; position: relative;">
+                            <img src="{{this.imageUrl}}" class="card-img-top h-100 w-100" style="object-fit: cover;" alt="{{this.title}}">
 
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {{#each topAnime}}
-                    <div class="col">
-                        <div class="card h-100 shadow-sm border rounded">
+                            {{#if this.score}}
+                                <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-warning text-dark shadow-sm">
+                                    <i class="bi bi-star-fill"></i> {{this.score}}
+                                </span>
+                                </div>
+                            {{/if}}
+                        </div>
 
-                            <div style="height: 300px; overflow: hidden;">
-                                <img src="{{this.imageUrl}}" class="card-img-top h-100 w-100" style="object-fit: cover;" alt="{{this.title}}">
-                            </div>
+                        <div class="card-body d-flex flex-column pt-3">
+                            <h6 class="card-title text-truncate fw-bold" title="{{this.title}}">
+                                {{this.title}}
+                            </h6>
 
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title text-truncate" title="{{this.title}}">
-                                    {{this.title}}
-                                </h5>
 
-                                <p class="card-text text-muted small mb-3">
-                                    {{#if this.genres}}
-                                        {{this.genres}}
-                                    {{else}}
-                                        {{this.type}}
-                                    {{/if}}
-                                </p>
+                            <p class="card-text text-muted small mb-3 text-truncate">
+                                {{#if this.genres}}
+                                    {{this.genres}}
+                                {{else}}
+                                    Unknown Genre
+                                {{/if}}
+                            </p>
 
-                                <a href="/anime/{{this.malId}}" class="btn btn-primary w-100 mt-auto">
-                                    See more
-                                </a>
-                            </div>
-
+                            <a href="/anime/{{this.malId}}" class="btn btn-primary btn-sm w-100 mt-auto stretched-link">
+                                Details
+                            </a>
                         </div>
                     </div>
-                {{/each}}
-            </div>
+                </div>
+            {{/each}}
+        </div>
+    {{else}}
+        <div class="text-center py-5">
+            <h3 class="text-muted">No results found</h3>
+            <p class="text-muted">Try adjusting your filters.</p>
         </div>
     {{/if}}
 
 </div>
 
 <style>
-    .hover-effect { transition: transform 0.2s; }
-    .hover-effect:hover { transform: translateY(-5px); }
+    .hover-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .hover-card:hover { transform: translateY(-5px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
 </style>
