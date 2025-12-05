@@ -26,13 +26,15 @@ public class AnimeController {
     }
 
 
-
+/*
     // Endpoint: Search animes
     // GET http://localhost:8080/api/animes/search?title=Naruto
     @GetMapping("/search")
     public List<Anime> searchAnimes(@RequestParam String title) {
         return animeService.searchAnimes(title);
     }
+
+ */
 
     // GET /api/animes/1/characters
     @GetMapping("/{id}/characters")
@@ -56,5 +58,16 @@ public class AnimeController {
     @GetMapping("/top")
     public ResponseEntity<List<Anime>> getTopAnime() {
         return ResponseEntity.ok(animeService.getTopRankedAnime());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Anime>> searchAnimes(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) Double minScore,
+            @RequestParam(required = false) String rating
+    ) {
+        List<Anime> results = animeService.searchAnimeWithFilters(title, genre, minScore, rating);
+        return ResponseEntity.ok(results);
     }
 }

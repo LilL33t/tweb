@@ -52,4 +52,15 @@ public class AnimeService {
         return animeRepository.findTopRanked();
     }
 
+    public List<Anime> searchAnimeWithFilters(String title, String genre, Double minScore, String rating) {
+
+        // Clean String inputs
+        String cleanTitle = (title != null && !title.isBlank()) ? title : null;
+        String cleanGenre = (genre != null && !genre.isBlank()) ? genre : null;
+        String cleanRating = (rating != null && !rating.isBlank()) ? rating : null;
+
+        // Integers/Doubles are automatically null if not sent, so just pass them
+        return animeRepository.searchAnimeComplex(cleanTitle, cleanGenre, minScore, cleanRating);
+    }
+
 }

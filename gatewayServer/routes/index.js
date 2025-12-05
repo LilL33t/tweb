@@ -65,4 +65,37 @@ router.get('/anime/:id', async function(req, res) {
     }
 });
 
+router.get('/search', async (req, res) => {
+    try {
+        // 1. Destructure all possible params
+        const { q, genre, min_score, rating, favorites, year } = req.query;
+
+        // 2. Call Spring Boot with ALL params
+        const response = await axios.get('http://localhost:8080/api/animes/search', {
+            params: {
+                title: q,
+                genre: genre,
+                minScore: min_score,
+                rating: rating,
+                minFavorites: favorites
+            }
+        });
+
+        // 3. Render 'index' (or 'home') with results
+        // Note: We use 'topAnime' variable name for the grid to reuse the same HBS loop
+        res.render('index', {
+            title: "Search Results",
+            topAnime: response.data,
+            searchParams: req.query // Pass back params to keep form filled
+        });
+
+    } catch (err) {
+        console.error("Search Error:", err.message);
+        res.render('index', {
+            topAnime: [],
+            error: "Search unavailable."
+        });
+    }
+});
+
 module.exports = router;

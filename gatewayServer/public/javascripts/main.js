@@ -1,4 +1,5 @@
 // 1. Search Function
+/*
 async function searchAnime() {
     const query = document.getElementById('searchInput').value;
     const resultsDiv = document.getElementById('resultsArea');
@@ -170,3 +171,28 @@ function getScoreColor(score) {
     if (score >= 5) return 'warning'; // Yellow
     return 'danger'; // Red
 }
+*/
+
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Get the parameters from the URL (e.g., ?genre=Adventure&year=2022)
+    const params = new URLSearchParams(window.location.search);
+
+    // 2. Define a helper to set values if they exist
+    function setFieldValue(name) {
+        if (params.has(name)) {
+            const element = document.querySelector(`[name="${name}"]`);
+            if (element) {
+                element.value = params.get(name);
+            }
+        }
+    }
+
+    // 3. Restore the values for each dropdown/input
+    setFieldValue('genre');
+    setFieldValue('rating');
+    setFieldValue('min_score');
+    setFieldValue('year');      // Works for input numbers too
+    setFieldValue('favorites'); // Works for input numbers too
+    // Title 'q' is already handled by value="{{searchParams.q}}" in the HBS, but this doesn't hurt.
+    setFieldValue('q');
+});

@@ -65,8 +65,24 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
 
 
     // FETCHES: The top 12 anime, ordered by score (Highest first)
-    @Query(value = "SELECT * FROM details WHERE score IS NOT NULL ORDER BY score DESC LIMIT 20", nativeQuery = true)
+    @Query(value = "SELECT * FROM details WHERE score IS NOT NULL ORDER BY score DESC LIMIT 102", nativeQuery = true)
     List<Anime> findTopRanked();
+
+    @Query(value = """
+        SELECT * FROM details 
+        WHERE (:title IS NULL OR LOWER(title) LIKE LOWER(CONCAT('%', :title, '%')))
+        AND (:genre IS NULL OR LOWER(genres) LIKE LOWER(CONCAT('%', :genre, '%')))
+        AND (:minScore IS NULL OR score >= :minScore)
+        AND (:rating IS NULL OR rating = :rating)
+        ORDER BY score DESC
+        LIMIT 102
+    """, nativeQuery = true)
+    List<Anime> searchAnimeComplex(
+            @Param("title") String title,
+            @Param("genre") String genre,
+            @Param("minScore") Double minScore,
+            @Param("rating") String rating
+    );
 
 }
 
