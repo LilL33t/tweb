@@ -62,6 +62,11 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
     """, nativeQuery = true)
     List<VoiceActorDTO> findVoiceActorsByAnimeId(@Param("animeId") Integer animeId);
 
-    //4. Get top animes based on score (to display on the homepage)
-    
+
+
+    // FETCHES: The top 12 anime, ordered by score (Highest first)
+    @Query(value = "SELECT * FROM details WHERE score IS NOT NULL ORDER BY score DESC LIMIT 20", nativeQuery = true)
+    List<Anime> findTopRanked();
+
 }
+

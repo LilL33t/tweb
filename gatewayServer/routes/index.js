@@ -1,10 +1,31 @@
 var express = require('express');
 var router = express.Router();
 var aggregator = require('../services/animeAggregator');
+var axios = require('axios');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Anime Analytics' });
+router.get('/', async function(req, res, next) {
+    try {
+        // 3. Request the "Top 12" from your Spring Boot Service
+        // Ensure this URL matches your Java Controller's @RequestMapping + @GetMapping
+        const response = await axios.get('http://localhost:8080/api/animes/top');
+
+        // 4. Render the 'index' view with the data
+        res.render('index', {
+            title: 'Anime Analytics',
+            topAnime: response.data
+        });
+
+    } catch (err) {
+        console.error("Gateway Error: Could not fetch top anime.", err.message);
+
+        // 5. If Java server is down, still render the page (empty list) so it doesn't crash
+        res.render('index', {
+            title: 'Anime Analytics',
+            topAnime: [],
+            error: "Service currently unavailable"
+        });
+    }
 });
 
 /* GET Anime Detail Page (NEW) */

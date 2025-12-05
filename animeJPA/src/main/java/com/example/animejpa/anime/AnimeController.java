@@ -6,6 +6,7 @@ import com.example.animejpa.dto.VoiceActorDTO;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,8 @@ public class AnimeController {
     public Anime getAnimeById(@PathVariable Integer id) {
         return animeService.getAnimeById(id);
     }
+
+
 
     // Endpoint: Search animes
     // GET http://localhost:8080/api/animes/search?title=Naruto
@@ -47,5 +50,11 @@ public class AnimeController {
     @GetMapping("/{id}/voices")
     public List<VoiceActorDTO> getVoiceActors(@PathVariable Integer id) {
         return animeService.getVoiceActors(id);
+    }
+
+    // GET http://localhost:8080/api/animes/top
+    @GetMapping("/top")
+    public ResponseEntity<List<Anime>> getTopAnime() {
+        return ResponseEntity.ok(animeService.getTopRankedAnime());
     }
 }

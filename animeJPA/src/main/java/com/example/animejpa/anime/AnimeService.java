@@ -46,4 +46,10 @@ public class AnimeService {
     public List<VoiceActorDTO> getVoiceActors(Integer id){
         return animeRepository.findVoiceActorsByAnimeId(id);
     }
+
+
+    public List<Anime> getTopRankedAnime() {
+        return animeRepository.findTopRanked();
+    }
+
 }
