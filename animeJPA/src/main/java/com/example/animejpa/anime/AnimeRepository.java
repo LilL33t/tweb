@@ -65,7 +65,7 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
 
 
     // FETCHES: The top 12 anime, ordered by score (Highest first)
-    @Query(value = "SELECT * FROM details WHERE score IS NOT NULL ORDER BY score DESC LIMIT 102", nativeQuery = true)
+    @Query(value = "SELECT * FROM details WHERE score IS NOT NULL ORDER BY score DESC LIMIT 250", nativeQuery = true)
     List<Anime> findTopRanked();
 
     @Query(value = """
@@ -75,7 +75,7 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
         AND (:minScore IS NULL OR score >= :minScore)
         AND (:rating IS NULL OR rating = :rating)
         ORDER BY score DESC
-        LIMIT 102
+        LIMIT 504
     """, nativeQuery = true)
     List<Anime> searchAnimeComplex(
             @Param("title") String title,

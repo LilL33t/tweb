@@ -3,26 +3,35 @@ const Rating = require('../models/rating');
 exports.getRatingByAnime = async (req, res) => {
     console.log("1. Request received for anime:", req.params.animeId); // LOG 1
 
-    try{
+    try {
         const animeId = parseInt(req.params.animeId);
+        const requestedScore = req.query.score; // Get the score from URL (e.g. ?score=10)
 
-        //logs for debug
-        console.log("2. Querying database...");
+        // 1. Build the Query Object dynamically
+        let query = { anime_id: animeId };
 
-        const ratings = await Rating.find({anime_id: animeId, score: {$gt: 0} }).sort({score: -1}).limit(1000);
-        //-> only valid scores >= (gt) 0, sorted by score (10--->1), limit number of "grabbed" records to N = 50
+        if (requestedScore) {
+            // CASE A: User selected a specific score (Dropdown/Bar Click)
+            query.score = parseInt(requestedScore);
 
-        console.log("3. Database answered:", ratings); // LOG 3
+        } else {
+            // CASE B: Default load (Show all valid scores)
+            query.score = { $gt: 0 };
 
-        if (!ratings) {
-            console.log("4. Ratings for Anime not found");
-            return res.status(404).json({ message: "Ratings for Anime not found" });
         }
 
-        console.log("5. Sending response");
-        res.json(ratings);
+        // 2. Run Query
+        // We use .lean() for performance
+        const ratings = await Rating.find(query)
+            .sort({ _id: -1 }) // Sort by Newest (using _id is faster than date)
+            .limit(20)         // Limit is crucial for performance
+            .lean();
 
-    }catch(e){
-        res.status(500).json({error: e.message});
+        // 3. Send Response
+        res.json(ratings || []);
+
+    } catch (e) {
+        console.error("Controller Error:", e);
+        res.status(500).json({ error: e.message });
     }
 }

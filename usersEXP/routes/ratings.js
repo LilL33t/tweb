@@ -5,6 +5,8 @@ const ratingController = require('../controllers/rating');
 
 
 
+//router.get('/:animeId', ratingController.getRatingByAnime);
+
 router.get('/:animeId', ratingController.getRatingByAnime);
 
 module.exports = router;

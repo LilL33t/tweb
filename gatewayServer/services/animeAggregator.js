@@ -5,7 +5,7 @@ const axios = require('axios');
 const JPA_URL  = 'http://127.0.0.1:8080/api';
 const EXP_URL = 'http://127.0.0.1:3001/api';
 
-exports.getFullAnimeDetails = async (id) => {
+exports.getFullAnimeDetails = async (id, scoreFilter) => {
 
     try {
 
@@ -23,7 +23,9 @@ exports.getFullAnimeDetails = async (id) => {
                 }),
 
             // Ratings
-            axios.get(`${EXP_URL}/ratings/${id}`)
+            axios.get(`${EXP_URL}/ratings/${id}`, {
+                    params: {score: scoreFilter}
+                })
                 .then(res => res.data)
                 .catch(err => {
                     console.error(" -> Reviews failed:", err.message);

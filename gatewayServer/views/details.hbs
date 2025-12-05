@@ -64,18 +64,77 @@
             </div>
             <div class="card bg-light mb-4 border-0">
                 <div class="card-body">
-                    <h5 class="card-title">Score Distribution</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Score Distribution</h5>
+                    </div>
+
                     {{#each scoreDistribution}}
-                        <div class="d-flex align-items-center mb-1" style="font-size: 0.9rem;">
+                        <div class="d-flex align-items-center mb-1 score-row" style="font-size: 0.9rem;">
+
                             <span class="fw-bold me-2" style="width: 20px;">{{this.score}}</span>
+
                             <div class="progress flex-grow-1" style="height: 10px;">
-                                <div class="progress-bar bg-{{this.color}}" style="width: {{this.percentage}}%"></div>
+                                <div class="progress-bar bg-{{this.color}}" role="progressbar"
+                                     style="width: {{this.percentage}}%"></div>
                             </div>
+
                             <span class="ms-2 text-muted small" style="width: 80px; text-align: right;">
-                            {{this.percentage}}%
-                        </span>
+                                {{this.percentage}}%
+                            </span>
                         </div>
                     {{/each}}
+
+                </div>
+            </div>
+
+            <div id="reviews-section" class="mt-5">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h4 class="mb-0">Recent Reviews</h4>
+
+                    <form id="filterForm" action="/anime/{{anime.malId}}" method="GET" class="d-flex align-items-center">
+                        <label class="me-2 small text-muted fw-bold">Filter:</label>
+
+                        <select name="score" class="form-select form-select-sm" style="width: 150px;">
+                            <option value="">All Scores</option>
+                            <option value="10">10 - Masterpiece</option>
+                            <option value="9">9 - Great</option>
+                            <option value="8">8 - Very Good</option>
+                            <option value="7">7 - Good</option>
+                            <option value="6">6 - Fine</option>
+                            <option value="5">5 - Average</option>
+                            <option value="4">4 - Bad</option>
+                            <option value="3">3 - Very Bad</option>
+                            <option value="2">2 - Horrible</option>
+                            <option value="1">1 - Appalling</option>
+                        </select>
+
+                        <button type="submit" class="btn btn-sm btn-primary ms-2">Go</button>
+                    </form>
+                </div>
+
+                <div class="row" id="reviewsContainer">
+                    {{#if reviews}}
+                        {{#each reviews}}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <strong class="text-primary">@{{this.username}}</strong>
+                                            <span class="badge bg-secondary">{{this.score}} / 10</span>
+                                        </div>
+                                        <div class="small text-muted d-flex gap-3">
+                                            <span><i class="bi bi-play-circle"></i> {{this.status}}</span>
+                                            <span><i class="bi bi-collection"></i> {{#if this.num_watched_episodes}} {{this.num_watched_episodes}} {{else}} ? {{/if}}  eps</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/each}}
+                    {{else}}
+                        <div class="col-12 text-center text-muted py-4">
+                            No reviews found for this score.
+                        </div>
+                    {{/if}}
                 </div>
             </div>
 

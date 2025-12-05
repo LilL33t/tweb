@@ -31,7 +31,9 @@ router.get('/', async function(req, res, next) {
 /* GET Anime Detail Page (NEW) */
 router.get('/anime/:id', async function(req, res) {
     try {
-        const data = await aggregator.getFullAnimeDetails(req.params.id);
+        const scoreFilter = req.query.score;
+
+        const data = await aggregator.getFullAnimeDetails(req.params.id, scoreFilter);
 
         if (!data) return res.render('error', { message: "Anime Not Found", error: { status: 404 } });
 
@@ -58,10 +60,39 @@ router.get('/anime/:id', async function(req, res) {
             characters: data.characters,
             staff: data.staff,
             voices: data.voices,
-            scoreDistribution: scoreDistribution
+            scoreDistribution: scoreDistribution,
+            selectedScore: scoreFilter
         });
     } catch (err) {
         res.render('error', { message: "Server Error", error: err });
+    }
+});
+
+router.get('/api/ratings/:id', async (req, res) => {
+    try {
+        // 1. CAPTURE: Read the score from the Browser's request
+        // req.query holds everything after the '?' (e.g., ?score=10)
+        const scoreFromBrowser = req.query.score;
+
+        console.log(`[Gateway] Received request for ID ${req.params.id}. Filter Score: ${scoreFromBrowser}`);
+
+        // 2. FORWARD: Send it to the Service
+        const response = await axios.get(`http://127.0.0.1:3001/api/ratings/${req.params.id}`, {
+            // 'params' automatically adds the ?score=X to the URL
+            params: {
+                score: scoreFromBrowser
+            }
+        });
+
+        console.log(`[Gateway] Service responded with ${response.data.length} items`);
+
+        // 3. RETURN: Send the Service's answer back to the Browser
+        res.json(response.data);
+
+    } catch (err) {
+        console.error("Gateway Proxy Error:", err.message);
+        // Return empty array so frontend doesn't crash
+        res.json([]);
     }
 });
 
