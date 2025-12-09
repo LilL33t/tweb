@@ -13,7 +13,7 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
         const animeData = animeResponse.data;
 
 
-        const [stats, reviews, recs, characters, staff, voices] = await Promise.all([
+        const [stats, reviews, recs, characters, staff, voices, profiles] = await Promise.all([
             // Stats
             axios.get(`${EXP_URL}/stats/${id}`)
                 .then(res => res.data)
@@ -64,8 +64,22 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
                 .catch(err => {
                     console.error(" -> Recs failed:", err.message);
                     return []; // Return empty recs if failed
-                })
+                }),
         ]);
+
+        if (reviews && reviews.length > 0) {
+            // We replace the original 'reviews' array with a new "Enriched" array
+            // that contains the user profile inside each review object
+            await Promise.all(reviews.map(async (review) => {
+                try {
+                    // Fetch profile for THIS specific review's username
+                    const userRes = await axios.get(`${EXP_URL}/users/${review.username}`);
+                    review.userProfile = userRes.data; // Attach profile to the review object
+                } catch (err) {
+                    review.userProfile = null; // Handle missing users safely
+                }
+            }));
+        }
 
         console.log(`Success! Merging data for ID ${id}`);
 

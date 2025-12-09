@@ -99,7 +99,23 @@
                                 <div class="card h-100 border-0 shadow-sm">
                                     <div class="card-body py-2">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <strong class="text-primary">@{{this.username}}</strong>
+
+                                            <a href="#" class="text-decoration-none fw-bold text-primary"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#userProfileModal"
+                                               data-username="{{this.username}}"
+                                               data-gender="{{this.userProfile.gender}}"
+                                               data-location="{{this.userProfile.location}}"
+                                               data-joined="{{this.userProfile.joined}}"
+                                               data-watching="{{this.userProfile.watching}}"
+                                               data-completed="{{this.userProfile.completed}}"
+                                               data-onhold="{{this.userProfile.on_hold}}"
+                                               data-dropped="{{this.userProfile.dropped}}"
+                                               data-plans="{{this.userProfile.plan_to_watch}}"
+                                               onclick="populateModal(this)">
+                                                @{{this.username}}
+                                            </a>
+
                                             <span class="badge bg-secondary">{{this.score}} / 10</span>
                                         </div>
                                         <div class="small text-muted d-flex gap-3">
@@ -139,50 +155,72 @@
             </ul>
 
             <div class="tab-content border border-top-0 p-3 bg-white rounded-bottom">
-
                 <div class="tab-pane fade show active" id="voice">
                     <div class="row">
                         {{#each voices}}
                             <div class="col-md-6 mb-2">
                                 <div class="d-flex align-items-center">
                                     <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
-                                    <div>
-                                        <strong>{{this.personName}}</strong> <small class="text-muted">({{this.language}})</small>
-                                        <br><small>as {{this.characterName}}</small>
-                                    </div>
+                                    <div><strong>{{this.personName}}</strong> <small class="text-muted">({{this.language}})</small><br><small>as {{this.characterName}}</small></div>
                                 </div>
                             </div>
                         {{/each}}
                     </div>
                 </div>
-
                 <div class="tab-pane fade" id="staff">
                     <div class="row">
                         {{#each staff}}
                             <div class="col-md-6 mb-2 d-flex align-items-center">
                                 <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
-                                <div>
-                                    <strong>{{this.name}}</strong>
-                                    <br><small class="text-muted">{{this.job}}</small>
-                                </div>
+                                <div><strong>{{this.name}}</strong><br><small class="text-muted">{{this.job}}</small></div>
                             </div>
                         {{/each}}
                     </div>
                 </div>
-
                 <div class="tab-pane fade" id="chars">
                     <div class="row">
                         {{#each characters}}
                             <div class="col-md-6 mb-2 d-flex align-items-center">
                                 <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
-                                <div>
-                                    <strong>{{this.name}}</strong>
-                                    <br><small class="text-muted">{{this.role}}</small>
-                                </div>
+                                <div><strong>{{this.name}}</strong><br><small class="text-muted">{{this.role}}</small></div>
                             </div>
                         {{/each}}
                     </div>
                 </div>
-
             </div>
-        </div> </div> </div> ```
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="userProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-person-circle me-2"></i> <span id="modalUsername">User</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <h2 class="display-6 fw-bold" id="modalUsernameDisplay">User</h2>
+                    <p class="text-muted" id="modalLocation"><i class="bi bi-geo-alt"></i> Unknown</p>
+                    <div class="d-flex justify-content-center gap-3 text-muted small">
+                        <span id="modalGender"><i class="bi bi-gender-ambiguous"></i> ?</span>
+                        <span>|</span>
+                        <span id="modalJoined"><i class="bi bi-calendar"></i> Joined: ?</span>
+                    </div>
+                </div>
+                <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">Anime Stats</h6>
+                <div class="row g-2 text-center">
+                    <div class="col-4"><div class="p-2 bg-light rounded border-start border-4 border-success"><small class="d-block text-muted">Watching</small><strong id="modalWatching" class="fs-5">0</strong></div></div>
+                    <div class="col-4"><div class="p-2 bg-light rounded border-start border-4 border-primary"><small class="d-block text-muted">Completed</small><strong id="modalCompleted" class="fs-5">0</strong></div></div>
+                    <div class="col-4"><div class="p-2 bg-light rounded border-start border-4 border-warning"><small class="d-block text-muted">On Hold</small><strong id="modalOnHold" class="fs-5">0</strong></div></div>
+                    <div class="col-6"><div class="p-2 bg-light rounded border-start border-4 border-danger"><small class="d-block text-muted">Dropped</small><strong id="modalDropped" class="fs-5">0</strong></div></div>
+                    <div class="col-6"><div class="p-2 bg-light rounded border-start border-4 border-secondary"><small class="d-block text-muted">Plan to Watch</small><strong id="modalPlans" class="fs-5">0</strong></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

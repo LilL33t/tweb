@@ -1,3 +1,47 @@
+// =========================================================
+// 1. GLOBAL FUNCTION
+// =========================================================
+// This enables onclick="populateModal(this)" to find it.
+function populateModal(element) {
+    console.log("Click detected! Data:", element.dataset); // <--- Check console for this
+
+    const data = element.dataset;
+
+    // Basic Info
+    const usernameEl = document.getElementById('modalUsername');
+    if (usernameEl) usernameEl.innerText = data.username || 'User';
+
+    const displayEl = document.getElementById('modalUsernameDisplay');
+    if (displayEl) displayEl.innerText = data.username || 'User';
+
+    // HTML Content (Icons)
+    const locEl = document.getElementById('modalLocation');
+    if (locEl) locEl.innerHTML = `<i class="bi bi-geo-alt"></i> ${data.location || 'Unknown'}`;
+
+    const genderEl = document.getElementById('modalGender');
+    if (genderEl) genderEl.innerHTML = `<i class="bi bi-gender-ambiguous"></i> ${data.gender || '?'}`;
+
+    const joinedEl = document.getElementById('modalJoined');
+    if (joinedEl) joinedEl.innerHTML = `<i class="bi bi-calendar"></i> Joined: ${data.joined || '?'}`;
+
+    // Stats (Ensure IDs match your HTML exactly)
+    const watchEl = document.getElementById('modalWatching');
+    if (watchEl) watchEl.innerText = data.watching || '0';
+
+    const compEl = document.getElementById('modalCompleted');
+    if (compEl) compEl.innerText = data.completed || '0';
+
+    const holdEl = document.getElementById('modalOnHold'); // Ensure data-onhold matches this
+    if (holdEl) holdEl.innerText = data.onhold || '0';
+
+    const dropEl = document.getElementById('modalDropped');
+    if (dropEl) dropEl.innerText = data.dropped || '0';
+
+    const planEl = document.getElementById('modalPlans'); // Ensure data-plans matches this
+    if (planEl) planEl.innerText = data.plans || '0';
+}
+
+
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Get the parameters from the URL (e.g., ?genre=Adventure&year=2022)
     const params = new URLSearchParams(window.location.search);
@@ -72,4 +116,6 @@ document.addEventListener("DOMContentLoaded", function() {
             window.location.search = params.toString();
         });
     });
+
+
 });
