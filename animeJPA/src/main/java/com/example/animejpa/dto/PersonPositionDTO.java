@@ -5,4 +5,9 @@ public interface PersonPositionDTO {
     String getJob();
     String getImageUrl();
     Integer getId(); // person_mal_id
+
+    String getBirthday();
+    Integer getMemberFavorites();
+    String getWebsiteUrl();
+    String getRelevantLocation();
 }

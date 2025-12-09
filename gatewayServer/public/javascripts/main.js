@@ -1,6 +1,10 @@
 // =========================================================
-// 1. GLOBAL FUNCTION
+// 1. GLOBAL FUNCTIONS
 // =========================================================
+
+
+
+
 // This enables onclick="populateModal(this)" to find it.
 function populateModal(element) {
     console.log("Click detected! Data:", element.dataset); // <--- Check console for this
@@ -39,6 +43,54 @@ function populateModal(element) {
 
     const planEl = document.getElementById('modalPlans'); // Ensure data-plans matches this
     if (planEl) planEl.innerText = data.plans || '0';
+}
+
+// =========================================================
+// STAFF MODAL LOGIC
+// =========================================================
+function populateStaffModal(element) {
+    const data = element.dataset;
+
+    // 1. Image
+    const imgEl = document.getElementById('staffModalImg');
+    // Check if data.image exists and is not empty, otherwise use placeholder
+    if(imgEl) {
+        imgEl.src = (data.image && data.image !== "") ? data.image : 'https://via.placeholder.com/150';
+    }
+
+    // 2. Name
+    const nameEl = document.getElementById('staffModalName');
+    if(nameEl) nameEl.innerText = data.name || 'Unknown';
+
+
+    // 3. Location
+    const locEl = document.getElementById('staffModalLoc');
+    if(locEl) {
+        // If location is missing or literal string "null", show Unknown
+        const loc = (data.location && data.location !== 'null') ? data.location : 'Unknown Location';
+        locEl.innerText = loc;
+    }
+
+    // 4. Stats
+    let bday = data.birthday || 'Unknown';
+    // Fix Java Timestamp format if needed (YYYY-MM-DD...)
+    if (bday !== 'Unknown' && bday.length >= 10) bday = bday.substring(0, 10);
+
+    document.getElementById('staffModalBday').innerText = bday;
+    document.getElementById('staffModalFavs').innerText = data.favorites || '0';
+
+    // 5. Website Link
+    const linkEl = document.getElementById('staffModalLink');
+    if(linkEl) {
+        if (data.website && data.website !== 'null' && data.website !== "") {
+            linkEl.href = data.website;
+            linkEl.style.display = 'inline-block';
+            linkEl.innerText = 'Visit Website';
+        } else {
+            // If no link, hide the button so user doesn't click a dead link
+            linkEl.style.display = 'none';
+        }
+    }
 }
 
 // =========================================================
@@ -179,5 +231,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Run once on load (shows all by default since input is empty)
         filterVoices();
     }
+
+
 
 });

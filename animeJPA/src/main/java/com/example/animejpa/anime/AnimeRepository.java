@@ -39,12 +39,15 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
         p.name AS name,
         w.position AS job,
         p.image_url AS imageUrl,
-        p.person_mal_id AS id
+        p.person_mal_id AS id,
+        p.birthday as birthday,
+        p.favorites as memberFavorites,
+        p.website_url as websiteUrl,
+        p.relevant_location as relevantLocation
     FROM person_details p
     JOIN person_anime_works w 
         ON p.person_mal_id::integer = w.person_mal_id::integer
     WHERE w.anime_mal_id::integer = :animeId
-    LIMIT 500
 """, nativeQuery = true)
     List<PersonPositionDTO> findStaffByAnimeId(@Param("animeId") Integer animeId);
 

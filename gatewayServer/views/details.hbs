@@ -211,11 +211,27 @@
                 <div class="tab-pane fade" id="staff">
                     <div class="row">
                         {{#each staff}}
-                            <div class="col-md-6 mb-2 d-flex align-items-center">
-                                <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
-                                <div>
-                                    <strong>{{this.name}}</strong>
-                                    <br><small class="text-muted">{{this.job}}</small>
+                            <div class="col-md-6 mb-2 staff-card"
+                                 style="cursor: pointer;"
+
+                                 data-name="{{this.name}}"
+                                 data-job="{{this.job}}"
+                                 data-image="{{this.imageUrl}}"
+                                 data-birthday="{{this.birthday}}"
+                                 data-favorites="{{this.memberFavorites}}"
+                                 data-location="{{this.relevantLocation}}"
+                                 data-website="{{this.websiteUrl}}"
+
+                                 onclick="populateStaffModal(this)"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#staffModal">
+
+                                <div class="d-flex align-items-center border rounded p-2 h-100 hover-shadow">
+                                    <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
+                                    <div>
+                                        <strong>{{this.name}}</strong>
+                                        <br><small class="text-muted">{{this.job}}</small>
+                                    </div>
                                 </div>
                             </div>
                         {{/each}}
@@ -306,6 +322,50 @@
 
                 <a id="voiceModalLink" href="#" target="_blank" class="btn btn-sm btn-outline-primary">
                     <i class="bi bi-box-arrow-up-right"></i> View Full Profile
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="staffModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-0">
+
+                <img id="staffModalImg" src="" class="rounded-circle shadow mb-3"
+                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff;">
+
+                <h4 id="staffModalName" class="fw-bold mb-1">Name</h4>
+
+                <p class="text-muted small mb-3">
+                    <i class="bi bi-geo-alt-fill text-danger"></i>
+                    <span id="staffModalLoc">Unknown Location</span>
+                </p>
+
+                <div class="row g-2 justify-content-center mb-3">
+                    <div class="col-6">
+                        <div class="p-2 bg-light rounded">
+                            <i class="bi bi-gift text-danger"></i>
+                            <div class="small text-muted">Birthday</div>
+                            <strong id="staffModalBday">Unknown</strong>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 bg-light rounded">
+                            <i class="bi bi-heart-fill text-danger"></i>
+                            <div class="small text-muted">Favorites</div>
+                            <strong id="staffModalFavs">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <a id="staffModalLink" href="#" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-box-arrow-up-right"></i> Visit site
                 </a>
 
             </div>
