@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
     setFieldValue('q');
 
     setFieldValue('score');
-    
+
     // 1. Get the current URL path (e.g., "/anime/5114")
     const path = window.location.pathname;
     const parts = path.split('/');
@@ -49,4 +49,27 @@ document.addEventListener("DOMContentLoaded", function() {
             loadReviews(animeId, selectedScore);
         });
     }
+
+    // ============================================
+    // 3. PAGINATION LOGIC
+    // ============================================
+    const pageLinks = document.querySelectorAll('.pagination-link');
+
+    pageLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Stop the link from jumping to top
+
+            // 1. Get the page number we want to go to
+            const targetPage = this.getAttribute('data-page');
+
+            // 2. Get the current URL parameters (e.g. ?genre=Action&q=Naruto)
+            const params = new URLSearchParams(window.location.search);
+
+            // 3. Update ONLY the 'page' parameter
+            params.set('page', targetPage);
+
+            // 4. Reload the page with the new parameters
+            window.location.search = params.toString();
+        });
+    });
 });

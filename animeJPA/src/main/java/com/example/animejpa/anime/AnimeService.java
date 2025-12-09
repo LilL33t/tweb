@@ -5,6 +5,9 @@ import com.example.animejpa.dto.PersonPositionDTO;
 import com.example.animejpa.dto.VoiceActorDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,8 +51,18 @@ public class AnimeService {
     }
 
 
-    public List<Anime> getTopRankedAnime() {
-        return animeRepository.findTopRanked();
+    public List<Anime> getTopAnimes(int page) {
+        // The Service decides the page size and sorting logic
+        int pageSize = 12; // Matches your frontend grid
+
+        // Handle 0-based index (Frontend sends 1, Spring wants 0)
+        int pageNumber = (page > 0) ? page - 1 : 0;
+
+        // Create the Pageable object here
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("score").descending());
+
+        // Call Repository
+        return animeRepository.findTopRanked(pageable);
     }
 
     public List<Anime> searchAnimeWithFilters(String title, String genre, Double minScore, String rating) {

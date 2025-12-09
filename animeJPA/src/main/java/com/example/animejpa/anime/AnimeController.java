@@ -6,6 +6,9 @@ import com.example.animejpa.dto.VoiceActorDTO;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,8 +59,12 @@ public class AnimeController {
 
     // GET http://localhost:8080/api/animes/top
     @GetMapping("/top")
-    public ResponseEntity<List<Anime>> getTopAnime() {
-        return ResponseEntity.ok(animeService.getTopRankedAnime());
+    public ResponseEntity<List<Anime>> getTopAnime(@RequestParam(defaultValue = "1") int page) {
+
+        // CLEAN: Just call the service with the raw page number
+        List<Anime> animes = animeService.getTopAnimes(page);
+
+        return ResponseEntity.ok(animes);
     }
 
     @GetMapping("/search")

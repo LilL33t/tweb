@@ -4,6 +4,7 @@ import com.example.animejpa.dto.CharacterRoleDTO;
 import com.example.animejpa.dto.PersonPositionDTO;
 import com.example.animejpa.dto.VoiceActorDTO;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
@@ -64,9 +65,16 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
 
 
 
+    //OLD NOT WORKING METHOD:
     // FETCHES: The top 12 anime, ordered by score (Highest first)
-    @Query(value = "SELECT * FROM details WHERE score IS NOT NULL ORDER BY score DESC LIMIT 250", nativeQuery = true)
-    List<Anime> findTopRanked();
+    // @Query(value = "SELECT * FROM details WHERE score IS NOT NULL ORDER BY score DESC LIMIT 250", nativeQuery = true)
+    // List<Anime> findTopRanked();
+
+    // NEW WORKING METHOD:
+    // 1. "findByScoreNotNull" adds "WHERE score IS NOT NULL"
+    // 2. "Pageable" automatically adds "ORDER BY score DESC LIMIT 12 OFFSET X"
+    @Query("SELECT a FROM Anime a WHERE a.score IS NOT NULL")
+    List<Anime> findTopRanked(Pageable pageable);
 
     @Query(value = """
         SELECT * FROM details 

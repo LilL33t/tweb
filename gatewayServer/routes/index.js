@@ -6,14 +6,23 @@ var axios = require('axios');
 /* GET home page. */
 router.get('/', async function(req, res, next) {
     try {
+        const page = parseInt(req.query.page) || 1;
         // 3. Request the "Top 12" from your Spring Boot Service
         // Ensure this URL matches your Java Controller's @RequestMapping + @GetMapping
-        const response = await axios.get('http://localhost:8080/api/animes/top');
+        const response = await axios.get('http://localhost:8080/api/animes/top', {
+            params: {page: page}
+        });
 
         // 4. Render the 'index' view with the data
         res.render('index', {
             title: 'Anime Analytics',
-            topAnime: response.data
+            topAnime: response.data,
+
+            //pagination
+            currentPage: page,
+            nextPage: page + 1,
+            prevPage: page - 1,
+            showPrev: page > 1
         });
 
     } catch (err) {
@@ -98,8 +107,10 @@ router.get('/api/ratings/:id', async (req, res) => {
 
 router.get('/search', async (req, res) => {
     try {
-        // 1. Destructure all possible params
+        // 1. Destructure all possible params and get current page
+        const page = parseInt(req.query.page) || 1;
         const { q, genre, min_score, rating, favorites, year } = req.query;
+
 
         // 2. Call Spring Boot with ALL params
         const response = await axios.get('http://localhost:8080/api/animes/search', {
@@ -108,7 +119,8 @@ router.get('/search', async (req, res) => {
                 genre: genre,
                 minScore: min_score,
                 rating: rating,
-                minFavorites: favorites
+                minFavorites: favorites,
+                page: page
             }
         });
 
@@ -117,7 +129,11 @@ router.get('/search', async (req, res) => {
         res.render('index', {
             title: "Search Results",
             topAnime: response.data,
-            searchParams: req.query // Pass back params to keep form filled
+            searchParams: req.query,// Pass back params to keep form filled
+            currentPage: page,
+            nextPage: page + 1,
+            prevPage: page - 1,
+            showPrev: page > 1
         });
 
     } catch (err) {
