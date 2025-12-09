@@ -65,34 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     setFieldValue('score');
 
-    // 1. Get the current URL path (e.g., "/anime/5114")
-    const path = window.location.pathname;
-    const parts = path.split('/');
 
-    // 2. Check if we are on an "anime" details page
-    // parts[0] is empty, parts[1] is 'anime', parts[2] is the ID
-    if (parts[1] === 'anime' && parts[2]) {
-        const animeId = parts[2];
-        console.log("Auto-loading reviews for:", animeId); // Debug line
-
-        // Call the function immediately!
-        loadReviews(animeId, null);
-    }
-
-    const ratingFilter = document.getElementById('ratingFilter');
-
-    if (ratingFilter) {
-        ratingFilter.addEventListener('change', function() {
-            // Get Anime ID from URL (e.g. /anime/5114)
-            const path = window.location.pathname.split('/');
-            const animeId = path[path.length - 1]; // Last part is ID
-
-            const selectedScore = this.value; // "10", "9", or ""
-
-            // Call the existing function
-            loadReviews(animeId, selectedScore);
-        });
-    }
 
     // ============================================
     // 3. PAGINATION LOGIC
@@ -117,5 +90,50 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // ============================================
+    // VOICE ACTOR FILTER LOGIC (Real-time Search)
+    // ============================================
+    const voiceInput = document.getElementById('voiceLangInput'); // Changed ID
+
+    if (voiceInput) {
+
+        function filterVoices() {
+            // 1. Get what the user typed (Lowercase & Trimmed)
+            const searchText = voiceInput.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.voice-card');
+
+            // console.log("Searching for:", searchText);
+
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                // 2. Get the card's language (Lowercase)
+                const rawLang = card.getAttribute('data-language') || "";
+                const cardLang = rawLang.toLowerCase();
+
+                // 3. Logic:
+                // If search is empty ("") -> SHOW ALL
+                // If card language includes search text (e.g. "japanese" includes "jap") -> SHOW
+                if (searchText === "" || cardLang.includes(searchText)) {
+                    card.style.display = "block";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            // 4. Toggle "No Results" message
+            const noMsg = document.getElementById('noVoicesMsg');
+            if (noMsg) {
+                noMsg.style.display = (visibleCount === 0) ? "block" : "none";
+            }
+        }
+
+        // 5. Run every time the user types a key
+        voiceInput.addEventListener('input', filterVoices);
+
+        // Run once on load (shows all by default since input is empty)
+        filterVoices();
+    }
 
 });

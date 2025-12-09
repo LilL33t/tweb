@@ -5,4 +5,5 @@ public interface VoiceActorDTO{
     String getPersonName();
     String getLanguage();
     String getImageUrl();
+    
 }

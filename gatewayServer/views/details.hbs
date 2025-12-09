@@ -156,15 +156,35 @@
 
             <div class="tab-content border border-top-0 p-3 bg-white rounded-bottom">
                 <div class="tab-pane fade show active" id="voice">
-                    <div class="row">
+
+                    <div class="d-flex justify-content-end mb-3 align-items-center">
+                        <label class="me-2 text-muted small fw-bold">Filter Language:</label>
+
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                            <input type="text" id="voiceLangInput" class="form-control" placeholder="Type language (e.g. Japanese)...">
+                        </div>
+                    </div>
+
+                    <div class="row" id="voiceGrid">
                         {{#each voices}}
-                            <div class="col-md-6 mb-2">
-                                <div class="d-flex align-items-center">
+                            <div class="col-md-6 mb-2 voice-card" data-language="{{this.language}}">
+                                <div class="d-flex align-items-center border rounded p-2 h-100">
                                     <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
-                                    <div><strong>{{this.personName}}</strong> <small class="text-muted">({{this.language}})</small><br><small>as {{this.characterName}}</small></div>
+                                    <div>
+                                        <strong>{{this.personName}}</strong>
+
+                                        <span class="badge bg-light text-dark border ms-1">{{this.language}}</span>
+
+                                        <br><small class="text-muted">as {{this.characterName}}</small>
+                                    </div>
                                 </div>
                             </div>
                         {{/each}}
+
+                        <div id="noVoicesMsg" class="col-12 text-center text-muted py-3" style="display: none;">
+                            No voice actors found for this language.
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="staff">

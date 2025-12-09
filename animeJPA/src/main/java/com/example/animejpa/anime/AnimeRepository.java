@@ -58,8 +58,6 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
         JOIN person_details p ON v.person_mal_id::integer = p.person_mal_id::integer
         JOIN characters c ON v.character_mal_id::integer = c.character_mal_id::integer
         WHERE v.anime_mal_id::integer = :animeId
-        AND v.language = 'Japanese'
-        LIMIT 500
     """, nativeQuery = true)
     List<VoiceActorDTO> findVoiceActorsByAnimeId(@Param("animeId") Integer animeId);
 
