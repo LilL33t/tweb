@@ -40,9 +40,12 @@ router.get('/', async function(req, res, next) {
 /* GET Anime Detail Page (NEW) */
 router.get('/anime/:id', async function(req, res) {
     try {
+        // 1. Capture Params
         const scoreFilter = req.query.score;
+        const page = parseInt(req.query.page) || 1;
 
-        const data = await aggregator.getFullAnimeDetails(req.params.id, scoreFilter);
+        // 2. Pass Page to Aggregator
+        const data = await aggregator.getFullAnimeDetails(req.params.id, scoreFilter, page);
 
         if (!data) return res.render('error', { message: "Anime Not Found", error: { status: 404 } });
 
@@ -66,11 +69,21 @@ router.get('/anime/:id', async function(req, res) {
             anime: data.animeData,
             stats: data.stats,
             reviews: data.ratings,
+
+            // Pass the filter & page info back to the View
+            selectedScore: scoreFilter,
+            reviewsPage: page,
+            reviewsNext: page + 1,
+            reviewsPrev: page - 1,
+            showPrevReviews: page > 1,
+            // Simple logic: If we got less than 6 items, we are on the last page.
+            // (Note: This isn't perfect, but avoids an extra DB count query)
+            showNextReviews: data.ratings.length === 6,
+
             characters: data.characters,
             staff: data.staff,
             voices: data.voices,
             scoreDistribution: scoreDistribution,
-            selectedScore: scoreFilter
         });
     } catch (err) {
         res.render('error', { message: "Server Error", error: err });

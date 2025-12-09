@@ -21,7 +21,6 @@
                     <li class="list-group-item"><strong>Watching:</strong> {{stats.watching}}</li>
                     <li class="list-group-item"><strong>Completed:</strong> {{stats.completed}}</li>
                     <li class="list-group-item"><strong>Total Views:</strong> {{stats.total}}</li>
-
                 </ul>
             </div>
         </div>
@@ -36,84 +35,64 @@
                         <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Source</small>
                         <div class="fw-medium">{{anime.source}}</div>
                     </div>
-
                     <div class="col-auto pe-4 border-start">
                         <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Rating</small>
                         <div class="fw-medium">{{anime.rating}}</div>
                     </div>
-
                     <div class="col-auto pe-4 border-start">
                         <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Licensors</small>
                         <div class="fw-medium">{{anime.licensors}}</div>
                     </div>
-
                     <div class="col-md border-start">
                         <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Producers</small>
                         <div class="fw-medium text-truncate">
-                            {{#if anime.producers}}
-                                {{anime.producers}}
-                            {{else}}
-                                <span class="text-muted fst-italic">None found</span>
-                            {{/if}}
+                            {{#if anime.producers}}{{anime.producers}}{{else}}<span class="text-muted fst-italic">None found</span>{{/if}}
                         </div>
                     </div>
-
-
-
                 </div>
             </div>
+
             <div class="card bg-light mb-4 border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title mb-0">Score Distribution</h5>
                     </div>
-
                     {{#each scoreDistribution}}
                         <div class="d-flex align-items-center mb-1 score-row" style="font-size: 0.9rem;">
-
                             <span class="fw-bold me-2" style="width: 20px;">{{this.score}}</span>
-
                             <div class="progress flex-grow-1" style="height: 10px;">
-                                <div class="progress-bar bg-{{this.color}}" role="progressbar"
-                                     style="width: {{this.percentage}}%"></div>
+                                <div class="progress-bar bg-{{this.color}}" role="progressbar" style="width: {{this.percentage}}%"></div>
                             </div>
-
-                            <span class="ms-2 text-muted small" style="width: 80px; text-align: right;">
-                                {{this.percentage}}%
-                            </span>
+                            <span class="ms-2 text-muted small" style="width: 80px; text-align: right;">{{this.percentage}}%</span>
                         </div>
                     {{/each}}
-
                 </div>
             </div>
 
-
-            <div id="reviews-section" class="mt-5">
+            <div id="reviews-section" class="mt-5 mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                     <h4 class="mb-0">Recent Reviews</h4>
 
-                    <form id="filterForm" action="/anime/{{anime.malId}}" method="GET" class="d-flex align-items-center">
+                    <form action="/anime/{{anime.malId}}" method="GET" class="d-flex align-items-center">
                         <label class="me-2 small text-muted fw-bold">Filter:</label>
-
                         <select name="score" class="form-select form-select-sm" style="width: 150px;">
-                            <option value="">All Scores</option>
-                            <option value="10">10 - Masterpiece</option>
-                            <option value="9">9 - Great</option>
-                            <option value="8">8 - Very Good</option>
-                            <option value="7">7 - Good</option>
-                            <option value="6">6 - Fine</option>
-                            <option value="5">5 - Average</option>
-                            <option value="4">4 - Bad</option>
-                            <option value="3">3 - Very Bad</option>
-                            <option value="2">2 - Horrible</option>
-                            <option value="1">1 - Appalling</option>
+                            <option value="" {{#unless selectedScore}}selected{{/unless}}>All Scores</option>
+                            <option value="10" {{#if (eq selectedScore "10")}}selected{{/if}}>10 - Masterpiece</option>
+                            <option value="9" {{#if (eq selectedScore "9")}}selected{{/if}}>9 - Great</option>
+                            <option value="8" {{#if (eq selectedScore "8")}}selected{{/if}}>8 - Very Good</option>
+                            <option value="7" {{#if (eq selectedScore "7")}}selected{{/if}}>7 - Good</option>
+                            <option value="6" {{#if (eq selectedScore "6")}}selected{{/if}}>6 - Fine</option>
+                            <option value="5" {{#if (eq selectedScore "5")}}selected{{/if}}>5 - Average</option>
+                            <option value="4" {{#if (eq selectedScore "4")}}selected{{/if}}>4 - Bad</option>
+                            <option value="3" {{#if (eq selectedScore "3")}}selected{{/if}}>3 - Very Bad</option>
+                            <option value="2" {{#if (eq selectedScore "2")}}selected{{/if}}>2 - Horrible</option>
+                            <option value="1" {{#if (eq selectedScore "1")}}selected{{/if}}>1 - Appalling</option>
                         </select>
-
                         <button type="submit" class="btn btn-sm btn-primary ms-2">Go</button>
                     </form>
                 </div>
 
-                <div class="row" id="reviewsContainer">
+                <div class="row">
                     {{#if reviews}}
                         {{#each reviews}}
                             <div class="col-md-6 mb-3">
@@ -125,17 +104,31 @@
                                         </div>
                                         <div class="small text-muted d-flex gap-3">
                                             <span><i class="bi bi-play-circle"></i> {{this.status}}</span>
-                                            <span><i class="bi bi-collection"></i> {{#if this.num_watched_episodes}} {{this.num_watched_episodes}} {{else}} ? {{/if}}  eps</span>
+                                            <span><i class="bi bi-collection"></i> {{#if this.num_watched_episodes}} {{this.num_watched_episodes}} {{else}} ? {{/if}} eps</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         {{/each}}
                     {{else}}
-                        <div class="col-12 text-center text-muted py-4">
-                            No reviews found for this score.
-                        </div>
+                        <div class="col-12 text-center text-muted py-4">No reviews found on this page.</div>
                     {{/if}}
+                </div>
+
+                <div class="d-flex justify-content-center mt-3">
+                    <nav aria-label="Reviews navigation">
+                        <ul class="pagination pagination-sm">
+                            <li class="page-item {{#unless showPrevReviews}}disabled{{/unless}}">
+                                <a class="page-link" href="/anime/{{anime.malId}}?score={{selectedScore}}&page={{reviewsPrev}}">Previous</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link text-muted">Page {{reviewsPage}}</span>
+                            </li>
+                            <li class="page-item {{#unless showNextReviews}}disabled{{/unless}}">
+                                <a class="page-link" href="/anime/{{anime.malId}}?score={{selectedScore}}&page={{reviewsNext}}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
 
@@ -152,7 +145,7 @@
                         {{#each voices}}
                             <div class="col-md-6 mb-2">
                                 <div class="d-flex align-items-center">
-                                    <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%;" class="me-2">
+                                    <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
                                     <div>
                                         <strong>{{this.personName}}</strong> <small class="text-muted">({{this.language}})</small>
                                         <br><small>as {{this.characterName}}</small>
@@ -167,7 +160,7 @@
                     <div class="row">
                         {{#each staff}}
                             <div class="col-md-6 mb-2 d-flex align-items-center">
-                                <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%;" class="me-2">
+                                <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
                                 <div>
                                     <strong>{{this.name}}</strong>
                                     <br><small class="text-muted">{{this.job}}</small>
@@ -181,7 +174,7 @@
                     <div class="row">
                         {{#each characters}}
                             <div class="col-md-6 mb-2 d-flex align-items-center">
-                                <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%;" class="me-2">
+                                <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
                                 <div>
                                     <strong>{{this.name}}</strong>
                                     <br><small class="text-muted">{{this.role}}</small>
@@ -192,6 +185,4 @@
                 </div>
 
             </div>
-        </div>
-    </div>
-</div>
+        </div> </div> </div> ```
