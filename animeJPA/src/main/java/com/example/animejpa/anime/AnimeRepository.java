@@ -50,15 +50,20 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
 
     // 3. Get Voice Actors (Clean version without comments)
     @Query(value = """
-        SELECT c.name as characterName, 
-               p.name as personName, 
-               v.language as language, 
-               p.image_url as imageUrl
-        FROM person_voice_works v
-        JOIN person_details p ON v.person_mal_id::integer = p.person_mal_id::integer
-        JOIN characters c ON v.character_mal_id::integer = c.character_mal_id::integer
-        WHERE v.anime_mal_id::integer = :animeId
-    """, nativeQuery = true)
+    SELECT c.name as characterName, 
+           p.name as personName, 
+           v.language as language, 
+           p.image_url as imageUrl,
+           p.birthday as birthday,
+           p.favorites as memberFavorites,
+           p.website_url as websiteUrl,
+           p.relevant_location as relevantLocation
+
+    FROM person_voice_works v
+    JOIN person_details p ON v.person_mal_id::integer = p.person_mal_id::integer
+    JOIN characters c ON v.character_mal_id::integer = c.character_mal_id::integer
+    WHERE v.anime_mal_id::integer = :animeId
+""", nativeQuery = true)
     List<VoiceActorDTO> findVoiceActorsByAnimeId(@Param("animeId") Integer animeId);
 
 

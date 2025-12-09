@@ -41,6 +41,50 @@ function populateModal(element) {
     if (planEl) planEl.innerText = data.plans || '0';
 }
 
+// =========================================================
+// NEW: VOICE ACTOR MODAL LOGIC
+// =========================================================
+function populateVoiceModal(element) {
+    const data = element.dataset;
+
+    // 1. Basic Info
+    const imgEl = document.getElementById('voiceModalImg');
+    if(imgEl) imgEl.src = data.image || 'https://via.placeholder.com/150';
+
+    const nameEl = document.getElementById('voiceModalName');
+    if(nameEl) nameEl.innerText = data.name || 'Unknown';
+
+    const charEl = document.getElementById('voiceModalChar');
+    if(charEl) charEl.innerText = data.character || 'Unknown';
+
+    // 2. NEW: Location
+    const locEl = document.getElementById('voiceModalLoc');
+    if(locEl) {
+        // If data is missing or empty string, show 'Unknown'
+        locEl.innerText = data.location && data.location !== 'null' ? data.location : 'Unknown Location';
+    }
+
+    // 3. Stats
+    let bday = data.birthday || 'Unknown';
+    if (bday !== 'Unknown' && bday.length >= 10) {
+        bday = bday.substring(0, 10);
+    }
+    document.getElementById('voiceModalBday').innerText = bday;
+    document.getElementById('voiceModalFavs').innerText = data.favorites || '0';
+
+    // 4. Website
+    const linkEl = document.getElementById('voiceModalLink');
+    if(linkEl) {
+        if (data.website && data.website !== 'null') {
+            linkEl.href = data.website;
+            linkEl.style.display = 'inline-block';
+            linkEl.innerText = 'Visit Website';
+        } else {
+            linkEl.style.display = 'none';
+        }
+    }
+}
+
 
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Get the parameters from the URL (e.g., ?genre=Adventure&year=2022)

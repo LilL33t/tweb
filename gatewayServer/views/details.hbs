@@ -149,12 +149,19 @@
             </div>
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#voice">Voice Actors</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#staff">Staff</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#chars">Characters</button></li>
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#voice">Voice Actors</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#staff">Staff</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#chars">Characters</button>
+                </li>
             </ul>
 
             <div class="tab-content border border-top-0 p-3 bg-white rounded-bottom">
+
                 <div class="tab-pane fade show active" id="voice">
 
                     <div class="d-flex justify-content-end mb-3 align-items-center">
@@ -168,14 +175,27 @@
 
                     <div class="row" id="voiceGrid">
                         {{#each voices}}
-                            <div class="col-md-6 mb-2 voice-card" data-language="{{this.language}}">
-                                <div class="d-flex align-items-center border rounded p-2 h-100">
+                            <div class="col-md-6 mb-2 voice-card"
+                                 style="cursor: pointer;"
+                                 data-language="{{this.language}}"
+
+                                 data-name="{{this.personName}}"
+                                 data-image="{{this.imageUrl}}"
+                                 data-character="{{this.characterName}}"
+                                 data-birthday="{{this.birthday}}"
+                                 data-favorites="{{this.memberFavorites}}"
+                                 data-website="{{this.websiteUrl}}"
+                                 data-location="{{this.relevantLocation}}"
+
+                                 onclick="populateVoiceModal(this)"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#voiceActorModal">
+
+                                <div class="d-flex align-items-center border rounded p-2 h-100 hover-shadow">
                                     <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
                                     <div>
                                         <strong>{{this.personName}}</strong>
-
                                         <span class="badge bg-light text-dark border ms-1">{{this.language}}</span>
-
                                         <br><small class="text-muted">as {{this.characterName}}</small>
                                     </div>
                                 </div>
@@ -187,33 +207,36 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="tab-pane fade" id="staff">
                     <div class="row">
                         {{#each staff}}
                             <div class="col-md-6 mb-2 d-flex align-items-center">
                                 <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
-                                <div><strong>{{this.name}}</strong><br><small class="text-muted">{{this.job}}</small></div>
+                                <div>
+                                    <strong>{{this.name}}</strong>
+                                    <br><small class="text-muted">{{this.job}}</small>
+                                </div>
                             </div>
                         {{/each}}
                     </div>
                 </div>
+
                 <div class="tab-pane fade" id="chars">
                     <div class="row">
                         {{#each characters}}
                             <div class="col-md-6 mb-2 d-flex align-items-center">
                                 <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
-                                <div><strong>{{this.name}}</strong><br><small class="text-muted">{{this.role}}</small></div>
+                                <div>
+                                    <strong>{{this.name}}</strong>
+                                    <br><small class="text-muted">{{this.role}}</small>
+                                </div>
                             </div>
                         {{/each}}
                     </div>
                 </div>
-            </div>
 
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="userProfileModal" tabindex="-1" aria-hidden="true">
+            </div> </div> </div> </div> <div class="modal fade" id="userProfileModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-primary text-white">
@@ -240,6 +263,51 @@
                     <div class="col-6"><div class="p-2 bg-light rounded border-start border-4 border-danger"><small class="d-block text-muted">Dropped</small><strong id="modalDropped" class="fs-5">0</strong></div></div>
                     <div class="col-6"><div class="p-2 bg-light rounded border-start border-4 border-secondary"><small class="d-block text-muted">Plan to Watch</small><strong id="modalPlans" class="fs-5">0</strong></div></div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="voiceActorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-0">
+
+                <img id="voiceModalImg" src="" class="rounded-circle shadow mb-3"
+                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff;">
+
+                <h4 id="voiceModalName" class="fw-bold mb-1">Name</h4>
+                <p class="text-muted small mb-2">Voice of <span id="voiceModalChar" class="fw-bold text-primary">Character</span></p>
+
+                <p class="text-muted small mb-3">
+                    <i class="bi bi-geo-alt-fill text-danger"></i>
+                    <span id="voiceModalLoc">Unknown Location</span>
+                </p>
+
+                <div class="row g-2 justify-content-center mb-3">
+                    <div class="col-6">
+                        <div class="p-2 bg-light rounded">
+                            <i class="bi bi-gift text-danger"></i>
+                            <div class="small text-muted">Birthday</div>
+                            <strong id="voiceModalBday">Unknown</strong>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 bg-light rounded">
+                            <i class="bi bi-heart-fill text-danger"></i>
+                            <div class="small text-muted">Favorites</div>
+                            <strong id="voiceModalFavs">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <a id="voiceModalLink" href="#" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-box-arrow-up-right"></i> View Full Profile
+                </a>
+
             </div>
         </div>
     </div>

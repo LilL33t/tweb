@@ -5,5 +5,9 @@ public interface VoiceActorDTO{
     String getPersonName();
     String getLanguage();
     String getImageUrl();
-    
+
+    String getBirthday();
+    Integer getMemberFavorites();
+    String getWebsiteUrl();
+    String getRelevantLocation();
 }
