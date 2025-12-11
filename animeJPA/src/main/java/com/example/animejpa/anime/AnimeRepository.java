@@ -107,5 +107,11 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
             Pageable pageable
     );
 
+
+    // Fetch multiple anime by a list of IDs
+    // Native Query is fast for this
+    @Query(value = "SELECT * FROM details WHERE mal_id IN :ids", nativeQuery = true)
+    List<Anime> findBatchByIds(@Param("ids") List<Integer> ids);
+
 }
 

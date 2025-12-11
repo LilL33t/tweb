@@ -78,4 +78,12 @@ public class AnimeController {
         List<Anime> results = animeService.searchAnimeWithFilters(title, genre, minScore, rating, page);
         return ResponseEntity.ok(results);
     }
+
+    //Recommendations
+    // GET /api/animes/batch?ids=317,55,101
+    @GetMapping("/batch")
+    public ResponseEntity<List<Anime>> getAnimesBatch(@RequestParam List<Integer> ids) {
+        List<Anime> animes = animeService.getAnimesByIdList(ids);
+        return ResponseEntity.ok(animes);
+    }
 }

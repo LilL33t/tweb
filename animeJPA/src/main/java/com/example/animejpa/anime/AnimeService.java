@@ -81,4 +81,10 @@ public class AnimeService {
         return animeRepository.searchAnimeComplex(cleanTitle, cleanGenre, minScore, cleanRating, pageable).getContent();
     }
 
+    public List<Anime> getAnimesByIdList(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of(); // Return empty list if no IDs provided
+        }
+        return animeRepository.findBatchByIds(ids);
+    }
 }

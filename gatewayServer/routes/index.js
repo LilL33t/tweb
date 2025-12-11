@@ -69,6 +69,7 @@ router.get('/anime/:id', async function(req, res) {
             anime: data.animeData,
             stats: data.stats,
             reviews: data.ratings,
+            recommendations: data.recommendations,
 
             // Pass the filter & page info back to the View
             selectedScore: scoreFilter,

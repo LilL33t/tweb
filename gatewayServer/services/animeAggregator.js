@@ -13,7 +13,7 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
         const animeData = animeResponse.data;
 
 
-        const [stats, reviews, recs, characters, staff, voices, profiles] = await Promise.all([
+        const [stats, reviews, recs, characters, staff, voices] = await Promise.all([
             // Stats
             axios.get(`${EXP_URL}/stats/${id}`)
                 .then(res => res.data)
@@ -67,6 +67,10 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
                 }),
         ]);
 
+        // =========================================================
+        // USER DETAILS LOGIC
+        // =========================================================
+
         if (reviews && reviews.length > 0) {
             // We replace the original 'reviews' array with a new "Enriched" array
             // that contains the user profile inside each review object
@@ -81,6 +85,30 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
             }));
         }
 
+        // =========================================================
+        // ANIME RECOMMENDATIONS LOGIC
+        // =========================================================
+
+        let fullRecommendations = [];
+
+        // Check if the 'recs' from Promise.all has data
+        if (recs && recs.length > 0) {
+            // 1. Extract IDs from the data we ALREADY fetched (reuse 'recs')
+            const recIds = recs.map(r => r.recommendation_mal_id).slice(0, 15);
+
+            // 2. Resolve details using the Java Service
+            if (recIds.length > 0) {
+                try {
+                    const recsDetails = await axios.get(`${JPA_URL}/animes/batch`, {
+                        params: { ids: recIds.join(',') }
+                    });
+                    fullRecommendations = recsDetails.data;
+                } catch (err) {
+                    console.error("Failed to fetch recommendation details:", err.message);
+                }
+            }
+        }
+
         console.log(`Success! Merging data for ID ${id}`);
 
         // 3. Merge and Return
@@ -88,10 +116,10 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
             animeData: animeData,
             stats: stats,
             ratings: reviews,
-            recommendations: recs,
             characters: characters,
             staff: staff,
             voices: voices,
+            recommendations: fullRecommendations
         };
 
     } catch (error) {
