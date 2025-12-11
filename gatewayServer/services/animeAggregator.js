@@ -94,7 +94,7 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
         // Check if the 'recs' from Promise.all has data
         if (recs && recs.length > 0) {
             // 1. Extract IDs from the data we ALREADY fetched (reuse 'recs')
-            const recIds = recs.map(r => r.recommendation_mal_id).slice(0, 15);
+            const recIds = recs.map(r => r.recommendation_mal_id);
 
             // 2. Resolve details using the Java Service
             if (recIds.length > 0) {
