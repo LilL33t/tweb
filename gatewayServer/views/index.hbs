@@ -130,7 +130,7 @@
             {{/each}}
         </div>
 
-        <nav aria-label="Page navigation" class="mb-5">
+        <nav aria-label="Page navigation" class="mt-5 mb-5">
             <ul class="pagination justify-content-center">
 
                 <li class="page-item {{#unless showPrev}}disabled{{/unless}}">
@@ -139,8 +139,8 @@
                     </a>
                 </li>
 
-                <li class="page-item active">
-                    <span class="page-link">Page {{currentPage}}</span>
+                <li class="page-item disabled">
+                    <span class="page-link text-muted">Page {{currentPage}}</span>
                 </li>
 
                 <li class="page-item">

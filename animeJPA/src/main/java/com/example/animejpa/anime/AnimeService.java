@@ -65,15 +65,20 @@ public class AnimeService {
         return animeRepository.findTopRanked(pageable);
     }
 
-    public List<Anime> searchAnimeWithFilters(String title, String genre, Double minScore, String rating) {
+    public List<Anime> searchAnimeWithFilters(String title, String genre, Double minScore, String rating, int page) {
 
-        // Clean String inputs
+        // 1. Clean String inputs
         String cleanTitle = (title != null && !title.isBlank()) ? title : null;
         String cleanGenre = (genre != null && !genre.isBlank()) ? genre : null;
         String cleanRating = (rating != null && !rating.isBlank()) ? rating : null;
 
-        // Integers/Doubles are automatically null if not sent, so just pass them
-        return animeRepository.searchAnimeComplex(cleanTitle, cleanGenre, minScore, cleanRating);
+        // 2. Setup Pagination (12 items per page, sorted by Score)
+        int pageNumber = (page > 0) ? page - 1 : 0; // Handle 1-based index
+        Pageable pageable = PageRequest.of(pageNumber, 12, Sort.by("score").descending());
+
+        // 3. Call Repository
+        // Now this returns a 'Page<Anime>', so .getContent() is valid!
+        return animeRepository.searchAnimeComplex(cleanTitle, cleanGenre, minScore, cleanRating, pageable).getContent();
     }
 
 }

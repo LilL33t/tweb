@@ -72,9 +72,10 @@ public class AnimeController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) Double minScore,
-            @RequestParam(required = false) String rating
+            @RequestParam(required = false) String rating,
+            @RequestParam(defaultValue = "1") int page
     ) {
-        List<Anime> results = animeService.searchAnimeWithFilters(title, genre, minScore, rating);
+        List<Anime> results = animeService.searchAnimeWithFilters(title, genre, minScore, rating, page);
         return ResponseEntity.ok(results);
     }
 }

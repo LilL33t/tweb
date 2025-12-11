@@ -4,6 +4,7 @@ import com.example.animejpa.dto.CharacterRoleDTO;
 import com.example.animejpa.dto.PersonPositionDTO;
 import com.example.animejpa.dto.VoiceActorDTO;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -89,13 +90,22 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
         AND (:minScore IS NULL OR score >= :minScore)
         AND (:rating IS NULL OR rating = :rating)
         ORDER BY score DESC
-        LIMIT 504
-    """, nativeQuery = true)
-    List<Anime> searchAnimeComplex(
+    """,
+    //This count query is needed by spring to know the total results so it knows how many pages are there
+    countQuery = """
+    SELECT count(*) FROM details
+    WHERE (:title IS NULL OR LOWER(title) LIKE LOWER(CONCAT('%', :title, '%')))
+    AND (:genre IS NULL OR LOWER(genres) LIKE LOWER(CONCAT('%', :genre, '%')))
+    AND (:minScore IS NULL OR score >= :minScore)
+    AND (:rating IS NULL OR rating = :rating)
+""",
+    nativeQuery = true)
+    Page<Anime> searchAnimeComplex(
             @Param("title") String title,
             @Param("genre") String genre,
             @Param("minScore") Double minScore,
-            @Param("rating") String rating
+            @Param("rating") String rating,
+            Pageable pageable
     );
 
 }
