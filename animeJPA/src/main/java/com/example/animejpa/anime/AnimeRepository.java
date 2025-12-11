@@ -28,7 +28,6 @@ public interface AnimeRepository extends JpaRepository<Anime, Integer>{
         JOIN character_anime_works w ON c.character_mal_id = w.character_mal_id
         WHERE w.anime_mal_id = :animeId
         ORDER BY w.role ASC
-        LIMIT 500
     """, nativeQuery = true)
     List<CharacterRoleDTO> findCharactersByAnimeId(@Param("animeId") Integer animeId);
 
