@@ -1,14 +1,10 @@
 // =========================================================
-// 1. GLOBAL FUNCTIONS (Accessible by HTML onclick/onchange)
+// 1. GLOBAL FUNCTIONS (Accessible by HTML onclick)
 // =========================================================
 
 // --- MODAL LOGIC (User) ---
 function populateModal(element) {
     const data = element.dataset;
-    const ids = ['modalUsername', 'modalUsernameDisplay', 'modalLocation', 'modalGender',
-        'modalJoined', 'modalWatching', 'modalCompleted', 'modalOnHold',
-        'modalDropped', 'modalPlans'];
-
     document.getElementById('modalUsername').innerText = data.username || 'User';
     document.getElementById('modalUsernameDisplay').innerText = data.username || 'User';
     document.getElementById('modalLocation').innerHTML = `<i class="bi bi-geo-alt"></i> ${data.location || 'Unknown'}`;
@@ -26,13 +22,16 @@ function populateModal(element) {
 function populateStaffModal(element) {
     const data = element.dataset;
     const imgEl = document.getElementById('staffModalImg');
-    if(imgEl) imgEl.src = (data.image && data.image !== "") ? data.image : 'https://via.placeholder.com/150';
 
-    const nameEl = document.getElementById('staffModalName');
-    if(nameEl) nameEl.innerText = data.name || 'Unknown';
+    // FIX: Check for "null" string or empty
+    if(imgEl) {
+        const hasImage = data.image && data.image !== "null" && data.image !== "";
+        imgEl.src = hasImage ? data.image : 'https://via.placeholder.com/150';
+    }
 
-    // Ensure this ID exists in your HTML
-    const jobEl = document.getElementById('staffModalJob');
+    document.getElementById('staffModalName').innerText = data.name || 'Unknown';
+
+    const jobEl = document.getElementById('staffModalJob'); // Ensure this ID exists in your HTML Modal
     if(jobEl) jobEl.innerText = data.job || 'Staff';
 
     const locEl = document.getElementById('staffModalLoc');
@@ -45,7 +44,7 @@ function populateStaffModal(element) {
 
     const linkEl = document.getElementById('staffModalLink');
     if(linkEl) {
-        if (data.website && data.website !== 'null') {
+        if (data.website && data.website !== 'null' && data.website !== "") {
             linkEl.href = data.website;
             linkEl.style.display = 'inline-block';
         } else {
@@ -58,7 +57,12 @@ function populateStaffModal(element) {
 function populateVoiceModal(element) {
     const data = element.dataset;
     const imgEl = document.getElementById('voiceModalImg');
-    if(imgEl) imgEl.src = data.image || 'https://via.placeholder.com/150';
+
+    // FIX: Check for "null" string
+    if(imgEl) {
+        const hasImage = data.image && data.image !== "null" && data.image !== "";
+        imgEl.src = hasImage ? data.image : 'https://via.placeholder.com/150';
+    }
 
     document.getElementById('voiceModalName').innerText = data.name || 'Unknown';
     document.getElementById('voiceModalChar').innerText = data.character || 'Unknown';
@@ -82,11 +86,10 @@ function populateVoiceModal(element) {
     }
 }
 
-// --- CLIENT-SIDE SEARCH LOGIC (No Reload) ---
+// --- CLIENT-SIDE SEARCH (For Main Grid) ---
 async function searchAnimes(page = 1) {
     if (!page || page < 1) page = 1;
 
-    // 1. Get Values
     const query = document.getElementById('searchInput').value;
     const genre = document.getElementById('genreSelect').value;
     const rating = document.getElementById('ratingSelect').value;
@@ -95,12 +98,10 @@ async function searchAnimes(page = 1) {
     const grid = document.getElementById('animeGrid');
     const pagContainer = document.getElementById('paginationContainer');
 
-    // 2. Loading State
     grid.style.minHeight = "400px";
     grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>';
 
     try {
-        // 3. Update URL (Cosmetic)
         const urlParams = new URLSearchParams();
         if(query) urlParams.set('q', query);
         if(genre) urlParams.set('genre', genre);
@@ -109,7 +110,6 @@ async function searchAnimes(page = 1) {
         urlParams.set('page', page);
         window.history.pushState({}, '', '?' + urlParams.toString());
 
-        // 4. Fetch
         const response = await axios.get('/api/search', {
             params: { q: query, title: query, genre, rating, minScore, page }
         });
@@ -117,7 +117,6 @@ async function searchAnimes(page = 1) {
         const animes = response.data;
         grid.innerHTML = '';
 
-        // 5. Render
         if (animes && animes.length > 0) {
             if(document.getElementById('resultCount'))
                 document.getElementById('resultCount').innerText = `${animes.length} Results on this page`;
@@ -140,8 +139,8 @@ async function searchAnimes(page = 1) {
                 grid.insertAdjacentHTML('beforeend', card);
             });
 
-            // 6. Re-render Pagination
-            const hasNext = animes.length >= 12; // Or your page size limit
+            // Re-render Pagination
+            const hasNext = animes.length >= 12;
             const prevPage = page > 1 ? page - 1 : null;
             const nextPage = hasNext ? page + 1 : null;
 
@@ -165,41 +164,31 @@ async function searchAnimes(page = 1) {
     }
 }
 
-// --- REVIEW FILTER LOGIC (Client-Side with Pagination) ---
+// --- REVIEW FILTER (Client-Side) ---
 async function filterReviews(score, page = 1) {
-    // 1. Get ID robustly
     const pathParts = window.location.pathname.split('/').filter(p => p !== '');
     const animeId = pathParts[pathParts.length - 1];
 
-    // Get Containers
     const container = document.getElementById('reviewsContainer');
     const pagContainer = document.getElementById('reviewsPagination');
 
     if(!container) return;
 
-    // 2. Visual Loading State
     container.style.opacity = '0.5';
-    // If getting a new score filter, reset page to 1 (handled by onclick in HTML)
 
     try {
-        // 3. Fetch from Gateway
         const res = await axios.get(`/api/reviews/${animeId}`, {
-            params: {
-                score: score,
-                page: page // <--- Sending Page
-            }
+            params: { score: score, page: page }
         });
 
         const reviews = res.data;
         container.innerHTML = '';
-        if(pagContainer) pagContainer.innerHTML = ''; // Clear old buttons
+        if(pagContainer) pagContainer.innerHTML = '';
 
-        // 4. Handle Empty
         if (reviews.length === 0) {
-            container.innerHTML = '<div class="col-12 text-center text-muted py-4">No reviews found on this page.</div>';
+            container.innerHTML = '<div class="col-12 text-center text-muted py-4">No reviews found.</div>';
         }
 
-        // 5. Render Reviews
         reviews.forEach(review => {
             const user = review.userProfile || {};
             const username = review.username || 'User';
@@ -238,46 +227,24 @@ async function filterReviews(score, page = 1) {
             container.insertAdjacentHTML('beforeend', html);
         });
 
-        // 6. RENDER PAGINATION BUTTONS
+        // Review Pagination Buttons
         if (pagContainer) {
-            // Logic: Assume if we got exactly 6 items (or whatever your limit is), there might be a next page
-            // Adjust '6' to whatever your Internal Node Service limit is.
             const limit = 6;
             const hasNext = reviews.length === limit;
             const prevPage = page > 1 ? page - 1 : null;
             const nextPage = hasNext ? page + 1 : null;
-
-            // We need to keep the current score filter for the buttons
-            // (Note: score needs quotes in the onclick string)
             const safeScore = score ? `'${score}'` : "''";
 
-            let buttonsHTML = '';
-
-            // Previous Button
-            buttonsHTML += `
+            let buttonsHTML = `
                 <li class="page-item ${!prevPage ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="filterReviews(${safeScore}, ${prevPage}); return false;">
-                        Previous
-                    </a>
+                    <a class="page-link" href="#" onclick="filterReviews(${safeScore}, ${prevPage}); return false;">Previous</a>
                 </li>
-            `;
-
-            // Current Page Text
-            buttonsHTML += `
                 <li class="page-item disabled">
                     <span class="page-link text-muted">Page ${page}</span>
                 </li>
-            `;
-
-            // Next Button
-            buttonsHTML += `
                 <li class="page-item ${!nextPage ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="filterReviews(${safeScore}, ${nextPage}); return false;">
-                        Next
-                    </a>
-                </li>
-            `;
-
+                    <a class="page-link" href="#" onclick="filterReviews(${safeScore}, ${nextPage}); return false;">Next</a>
+                </li>`;
             pagContainer.innerHTML = buttonsHTML;
         }
 
@@ -291,136 +258,117 @@ async function filterReviews(score, page = 1) {
 
 
 // =========================================================
-// 2. DOM CONTENT LOADED (Internal Logic)
+// 2. DOM CONTENT LOADED
 // =========================================================
 document.addEventListener("DOMContentLoaded", function() {
 
-    // --- A. Restore Search Form Values from URL ---
+    // --- A. Restore Search Values ---
     const params = new URLSearchParams(window.location.search);
-    function setFieldValue(name) {
-        if (params.has(name)) {
-            const element = document.querySelector(`[id$="${name}Select"]`) || document.getElementById('searchInput');
-            if (element) element.value = params.get(name);
-        }
-    }
-    // Simple restoration
     if(document.getElementById('searchInput')) document.getElementById('searchInput').value = params.get('q') || '';
     if(document.getElementById('genreSelect')) document.getElementById('genreSelect').value = params.get('genre') || '';
     if(document.getElementById('ratingSelect')) document.getElementById('ratingSelect').value = params.get('rating') || '';
     if(document.getElementById('minScoreSelect')) document.getElementById('minScoreSelect').value = params.get('min_score') || '';
 
-
-    // --- B. Auto-Load Reviews on Details Page ---
-    // This is crucial for the details page to show reviews on load
+    // --- B. Auto-Load Reviews ---
     if (document.getElementById('reviewsContainer')) {
         filterReviews('');
     }
 
-
     // ============================================
-// VOICE ACTOR LOGIC (Filter + Client Pagination)
-// ============================================
-    const voiceInput = document.getElementById('voiceLangInput');
+    // UNIVERSAL CLIENT-SIDE PAGINATION (Voice, Staff, Chars)
+    // ============================================
 
-    if (voiceInput) {
-        const ITEMS_PER_PAGE = 10;
+    function setupClientPagination(cardClass, paginationId, inputId = null, itemsPerPage = 10) {
+        const pagContainer = document.getElementById(paginationId);
+        if (!pagContainer) return;
+
+        // Grab all cards
+        const allCards = Array.from(document.querySelectorAll(`.${cardClass}`));
         let currentPage = 1;
         let currentFilter = "";
 
-        // 1. Grab all cards ONCE (Source of Truth)
-        const allCards = Array.from(document.querySelectorAll('.voice-card'));
-
-        // 2. Main Render Function
-        function renderVoiceGrid() {
-            const noMsg = document.getElementById('noVoicesMsg');
-            const pagContainer = document.getElementById('voicePagination');
-
-            // A. FILTERING: Get list of matching cards
+        function render() {
+            // Filter
             const matchingCards = allCards.filter(card => {
-                const rawLang = card.getAttribute('data-language') || "";
-                return currentFilter === "" || rawLang.toLowerCase().includes(currentFilter);
+                // If filter input provided (like Voice search)
+                if (inputId) {
+                    const rawVal = card.getAttribute('data-language') || "";
+                    return currentFilter === "" || rawVal.toLowerCase().includes(currentFilter);
+                }
+                return true; // No filter for Staff/Chars
             });
 
-            // B. PAGINATION: Calculate Slice
-            const totalPages = Math.ceil(matchingCards.length / ITEMS_PER_PAGE);
-
-            // Safety check: if we filter and reduce pages, reset current page if needed
+            // Pagination
+            const totalPages = Math.ceil(matchingCards.length / itemsPerPage);
             if (currentPage > totalPages) currentPage = 1;
             if (currentPage < 1) currentPage = 1;
 
-            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-            const endIndex = startIndex + ITEMS_PER_PAGE;
-
-            // The actual cards to show right now
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
             const cardsToShow = matchingCards.slice(startIndex, endIndex);
 
-            // C. RENDER: Loop through ALL cards and show/hide accordingly
+            // Toggle Visibility
             allCards.forEach(card => {
                 if (cardsToShow.includes(card)) {
-                    card.style.display = 'block'; // Show if in current page slice
+                    card.style.display = ''; // RESET to default (fixes layout break)
                 } else {
-                    card.style.display = 'none';  // Hide otherwise
+                    card.style.display = 'none';
                 }
             });
 
-            // Toggle "No Results" message
-            if (matchingCards.length === 0) {
-                noMsg.style.display = 'block';
-                pagContainer.innerHTML = ''; // Hide pagination if no results
-                return;
-            } else {
-                noMsg.style.display = 'none';
-            }
-
-            // D. RENDER BUTTONS
+            // Render Buttons
             let buttonsHTML = '';
-
             if (totalPages > 1) {
-                // Prev Button
-                buttonsHTML += `
-                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                        <button class="page-link" onclick="changeVoicePage(${currentPage - 1})">Prev</button>
-                    </li>
-                `;
+                // Prev
+                buttonsHTML += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <button class="page-link" data-page="${currentPage - 1}">Prev</button></li>`;
 
-                // Page Numbers logic (Show simplified range)
+                // Pages
                 for (let i = 1; i <= totalPages; i++) {
-                    // Show first, last, and pages around current
                     if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                        buttonsHTML += `
-                            <li class="page-item ${i === currentPage ? 'active' : ''}">
-                                <button class="page-link" onclick="changeVoicePage(${i})">${i}</button>
-                            </li>
-                        `;
+                        buttonsHTML += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <button class="page-link" data-page="${i}">${i}</button></li>`;
                     } else if (i === currentPage - 2 || i === currentPage + 2) {
                         buttonsHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
                     }
                 }
 
-                // Next Button
-                buttonsHTML += `
-                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                        <button class="page-link" onclick="changeVoicePage(${currentPage + 1})">Next</button>
-                    </li>
-                `;
+                // Next
+                buttonsHTML += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <button class="page-link" data-page="${currentPage + 1}">Next</button></li>`;
             }
             pagContainer.innerHTML = buttonsHTML;
         }
 
-        // 3. Make page change function Global so HTML onclick can see it
-        window.changeVoicePage = function(newPage) {
-            currentPage = newPage;
-            renderVoiceGrid();
-        };
-
-        // 4. Listener for Typing
-        voiceInput.addEventListener('input', function(e) {
-            currentFilter = e.target.value.toLowerCase().trim();
-            currentPage = 1; // Always reset to page 1 when filtering
-            renderVoiceGrid();
+        // Event Delegation for Pagination Clicks
+        pagContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                e.preventDefault();
+                const newPage = parseInt(e.target.getAttribute('data-page'));
+                if (!isNaN(newPage)) {
+                    currentPage = newPage;
+                    render();
+                }
+            }
         });
 
-        // 5. Initial Run
-        renderVoiceGrid();
+        // Event Listener for Search Input (Voice only)
+        if (inputId) {
+            const inputEl = document.getElementById(inputId);
+            if (inputEl) {
+                inputEl.addEventListener('input', (e) => {
+                    currentFilter = e.target.value.toLowerCase().trim();
+                    currentPage = 1;
+                    render();
+                });
+            }
+        }
+
+        render(); // Initial Run
     }
+
+    // Initialize logic for all 3 sections
+    setupClientPagination('voice-card', 'voicePagination', 'voiceLangInput');
+    setupClientPagination('staff-card', 'staffPagination');
+    setupClientPagination('char-card', 'charPagination');
 });
