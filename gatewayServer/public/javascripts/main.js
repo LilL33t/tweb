@@ -317,27 +317,110 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 
-    // --- C. Voice Actor Filter Logic ---
+    // ============================================
+// VOICE ACTOR LOGIC (Filter + Client Pagination)
+// ============================================
     const voiceInput = document.getElementById('voiceLangInput');
-    if (voiceInput) {
-        function filterVoices() {
-            const searchText = voiceInput.value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.voice-card');
-            let visibleCount = 0;
 
-            cards.forEach(card => {
+    if (voiceInput) {
+        const ITEMS_PER_PAGE = 10;
+        let currentPage = 1;
+        let currentFilter = "";
+
+        // 1. Grab all cards ONCE (Source of Truth)
+        const allCards = Array.from(document.querySelectorAll('.voice-card'));
+
+        // 2. Main Render Function
+        function renderVoiceGrid() {
+            const noMsg = document.getElementById('noVoicesMsg');
+            const pagContainer = document.getElementById('voicePagination');
+
+            // A. FILTERING: Get list of matching cards
+            const matchingCards = allCards.filter(card => {
                 const rawLang = card.getAttribute('data-language') || "";
-                if (searchText === "" || rawLang.toLowerCase().includes(searchText)) {
-                    card.style.display = "block";
-                    visibleCount++;
+                return currentFilter === "" || rawLang.toLowerCase().includes(currentFilter);
+            });
+
+            // B. PAGINATION: Calculate Slice
+            const totalPages = Math.ceil(matchingCards.length / ITEMS_PER_PAGE);
+
+            // Safety check: if we filter and reduce pages, reset current page if needed
+            if (currentPage > totalPages) currentPage = 1;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+
+            // The actual cards to show right now
+            const cardsToShow = matchingCards.slice(startIndex, endIndex);
+
+            // C. RENDER: Loop through ALL cards and show/hide accordingly
+            allCards.forEach(card => {
+                if (cardsToShow.includes(card)) {
+                    card.style.display = 'block'; // Show if in current page slice
                 } else {
-                    card.style.display = "none";
+                    card.style.display = 'none';  // Hide otherwise
                 }
             });
-            const noMsg = document.getElementById('noVoicesMsg');
-            if (noMsg) noMsg.style.display = (visibleCount === 0) ? "block" : "none";
+
+            // Toggle "No Results" message
+            if (matchingCards.length === 0) {
+                noMsg.style.display = 'block';
+                pagContainer.innerHTML = ''; // Hide pagination if no results
+                return;
+            } else {
+                noMsg.style.display = 'none';
+            }
+
+            // D. RENDER BUTTONS
+            let buttonsHTML = '';
+
+            if (totalPages > 1) {
+                // Prev Button
+                buttonsHTML += `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <button class="page-link" onclick="changeVoicePage(${currentPage - 1})">Prev</button>
+                    </li>
+                `;
+
+                // Page Numbers logic (Show simplified range)
+                for (let i = 1; i <= totalPages; i++) {
+                    // Show first, last, and pages around current
+                    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                        buttonsHTML += `
+                            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                                <button class="page-link" onclick="changeVoicePage(${i})">${i}</button>
+                            </li>
+                        `;
+                    } else if (i === currentPage - 2 || i === currentPage + 2) {
+                        buttonsHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                    }
+                }
+
+                // Next Button
+                buttonsHTML += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <button class="page-link" onclick="changeVoicePage(${currentPage + 1})">Next</button>
+                    </li>
+                `;
+            }
+            pagContainer.innerHTML = buttonsHTML;
         }
-        voiceInput.addEventListener('input', filterVoices);
-        filterVoices(); // Run once
+
+        // 3. Make page change function Global so HTML onclick can see it
+        window.changeVoicePage = function(newPage) {
+            currentPage = newPage;
+            renderVoiceGrid();
+        };
+
+        // 4. Listener for Typing
+        voiceInput.addEventListener('input', function(e) {
+            currentFilter = e.target.value.toLowerCase().trim();
+            currentPage = 1; // Always reset to page 1 when filtering
+            renderVoiceGrid();
+        });
+
+        // 5. Initial Run
+        renderVoiceGrid();
     }
 });
