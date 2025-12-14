@@ -37,14 +37,40 @@ router.get('/anime/:id', async function(req, res) {
 
         if (!data) return res.render('error', { message: "Anime Not Found" });
 
-        // Calculate Score Distribution (Keep this server-side, it's fast)
+        // --- CALCULATE SCORE DISTRIBUTION & TOTAL VOTES ---
         const scoreDistribution = [];
+        let totalVotes = 0; // Initialize counter
+
         for (let i = 10; i >= 1; i--) {
             const pct = data.stats[`score_${i}_percentage`] || 0;
             const votes = data.stats[`score_${i}_votes`] || 0;
-            let color = i >= 8 ? 'success' : (i >= 5 ? 'warning' : 'danger');
+
+            // Add to total
+            totalVotes += votes;
+
+            let color = 'danger';
+            if (i >= 8) color = 'success';
+            else if (i >= 5) color = 'warning';
+
             scoreDistribution.push({ score: i, percentage: pct, votes: votes, color: color });
         }
+
+        // ---  FORMAT NUMBERS WITH COMMAS ---
+        // Helper function: if n exists, format it; otherwise return "0"
+        const fmt = (n) => n ? n.toLocaleString() : "0";
+
+        //Format Total Views
+        totalVotes = fmt(totalVotes);
+
+        // Format Anime Stats
+        // We overwrite the existing values with the formatted string versions
+        data.animeData.favorites = fmt(data.animeData.favorites);
+
+        // Format Usage Stats
+        data.stats.watching = fmt(data.stats.watching);
+        data.stats.completed = fmt(data.stats.completed);
+        data.stats.total = fmt(data.stats.total);
+
 
         res.render('details', {
             title: data.animeData.title,
@@ -56,6 +82,7 @@ router.get('/anime/:id', async function(req, res) {
             staff: data.staff,
             voices: data.voices,
             scoreDistribution: scoreDistribution,
+            totalVotes: totalVotes,
         });
     } catch (err) {
         res.render('error', { message: "Server Error", error: err });

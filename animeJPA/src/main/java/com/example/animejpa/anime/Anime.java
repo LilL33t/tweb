@@ -47,7 +47,7 @@ public class Anime{
     private String status;
 
     @Column(name = "favorites")
-    private String favorites;
+    private Integer favorites;
 
     @Column(name = "source")
     private String source;
@@ -169,11 +169,11 @@ public class Anime{
         this.status = status;
     }
 
-    public String getFavorites() {
+    public Integer getFavorites() {
         return favorites;
     }
 
-    public void setFavorites(String favorites) {
+    public void setFavorites(Integer favorites) {
         this.favorites = favorites;
     }
 
