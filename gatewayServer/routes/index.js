@@ -159,4 +159,42 @@ router.get('/search', async (req, res) => {
     }
 });
 
+
+/* gatewayServer/routes/index.js */
+
+// 1. API for Searching Animes (Returns JSON list)
+router.get('/api/search', async function(req, res) {
+    try {
+        // Forward query params (q, genre, rating, etc.) to the Java Backend
+        // You likely already have an aggregator function or axios call for this
+        // Here we call the Java Service directly or use your aggregator logic
+        const response = await axios.get('http://127.0.0.1:8080/api/animes/search', {
+            params: req.query
+        });
+        res.json(response.data); // <--- Send JSON, not HTML
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 2. API for Filtering Reviews (Returns JSON list)
+router.get('/api/reviews/:animeId', async function(req, res) {
+    try {
+        const { animeId } = req.params;
+        const { score } = req.query; // e.g. ?score=10
+
+        // Call your Node Service (Port 3001) which handles reviews
+        const response = await axios.get(`http://127.0.0.1:3001/api/ratings/${animeId}`, {
+            params: { score: score }
+        });
+
+        // IMPORTANT: We need to enrich these reviews with User Profiles if your UI needs images
+        // (Reuse your existing enrichment logic here if needed, or keep it simple for now)
+
+        res.json(response.data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // --- CONFIGURATION ---
-// We MUST use 127.0.0.1 to avoid connection errors
+// MUST use 127.0.0.1 to avoid connection errors
 const JPA_URL  = 'http://127.0.0.1:8080/api';
 const EXP_URL = 'http://127.0.0.1:3001/api';
 

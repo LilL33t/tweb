@@ -22,9 +22,8 @@ router.get('/search', async function(req, res) {
     }
 });
 
+
  */
-
-
 router.get('/search', async (req, res) => {
     try {
         // 1. Destructure all possible params

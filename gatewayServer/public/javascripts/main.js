@@ -3,8 +3,6 @@
 // =========================================================
 
 
-
-
 // This enables onclick="populateModal(this)" to find it.
 function populateModal(element) {
     console.log("Click detected! Data:", element.dataset); // <--- Check console for this
@@ -137,6 +135,122 @@ function populateVoiceModal(element) {
     }
 }
 
+// ============================================
+// CLIENT-SIDE SEARCH LOGIC (No Reload)
+// ============================================
+
+async function searchAnimes(page = 1) {
+    if (!page || page < 1) page = 1;
+
+    // 1. Get Values
+    const query = document.getElementById('searchInput').value;
+    const genre = document.getElementById('genreSelect').value;
+    const rating = document.getElementById('ratingSelect').value;
+    const minScore = document.getElementById('minScoreSelect').value;
+
+    // 2. Visual Loading State
+    const grid = document.getElementById('animeGrid');
+    const pagContainer = document.getElementById('paginationContainer');
+
+    // Save current height to prevent layout jump
+    grid.style.minHeight = "400px";
+    grid.innerHTML = `
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>`;
+
+    try {
+        // 3. Update URL (Optional, so user can copy link)
+        // We use pushState to change URL without reloading
+        const urlParams = new URLSearchParams();
+        if(query) urlParams.set('q', query);
+        if(genre) urlParams.set('genre', genre);
+        if(rating) urlParams.set('rating', rating);
+        if(minScore) urlParams.set('min_score', minScore);
+        urlParams.set('page', page);
+        window.history.pushState({}, '', '?' + urlParams.toString());
+
+        // 4. Fetch Data from Gateway API
+        // Make sure you created the route /api/search in your Gateway routes!
+        const response = await axios.get('/api/search', {
+            params: {
+                q: query, // Note: Spring expects 'title', check your mapping
+                title: query, // Send both just in case
+                genre: genre,
+                rating: rating,
+                minScore: minScore,
+                page: page
+            }
+        });
+
+        const animes = response.data;
+        grid.innerHTML = '';
+
+        // 5. Render Cards
+        if (animes && animes.length > 0) {
+            document.getElementById('resultCount').innerText = `${animes.length} Results on this page`;
+
+            animes.forEach(anime => {
+                const card = `
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 hover-card">
+                        <div style="height: 320px; overflow: hidden; position: relative;">
+                            <img src="${anime.imageUrl}" class="card-img-top h-100 w-100" style="object-fit: cover;" alt="${anime.title}">
+                            ${anime.score ? `
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-warning text-dark shadow-sm">
+                                    <i class="bi bi-star-fill"></i> ${anime.score}
+                                </span>
+                            </div>` : ''}
+                        </div>
+                        <div class="card-body d-flex flex-column pt-3">
+                            <h6 class="card-title text-truncate fw-bold" title="${anime.title}">${anime.title}</h6>
+                            <p class="card-text text-muted small mb-3 text-truncate">
+                                ${anime.genres || 'Unknown Genre'}
+                            </p>
+                            <a href="/anime/${anime.malId}" class="btn btn-primary btn-sm w-100 mt-auto stretched-link">Details</a>
+                        </div>
+                    </div>
+                </div>`;
+                grid.insertAdjacentHTML('beforeend', card);
+            });
+
+            // 6. Re-Render Pagination
+            // We assume next page exists if we got full 12 results (or whatever your limit is)
+            const hasNext = animes.length >= 12; // Adjust based on your page size
+            const prevPage = page > 1 ? page - 1 : null;
+            const nextPage = hasNext ? page + 1 : null;
+
+            pagContainer.innerHTML = `
+                <li class="page-item ${!prevPage ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="searchAnimes(${prevPage}); return false;">
+                        <i class="bi bi-chevron-left"></i> Previous
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link text-muted">Page ${page}</span>
+                </li>
+                <li class="page-item ${!nextPage ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="searchAnimes(${nextPage}); return false;">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+
+        } else {
+            grid.innerHTML = '<div class="col-12 text-center text-muted py-5"><h4>No results found</h4><p>Try adjusting your filters.</p></div>';
+            document.getElementById('resultCount').innerText = '0 Results';
+            pagContainer.innerHTML = ''; // Hide pagination
+        }
+
+    } catch (error) {
+        console.error("Search failed:", error);
+        grid.innerHTML = '<div class="col-12 text-center text-danger py-5">Error loading results. Please try again.</div>';
+    }
+}
+
 
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Get the parameters from the URL (e.g., ?genre=Adventure&year=2022)
@@ -156,7 +270,6 @@ document.addEventListener("DOMContentLoaded", function() {
     setFieldValue('genre');
     setFieldValue('rating');
     setFieldValue('min_score');
-    // Title 'q' is already handled by value="{{searchParams.q}}" in the HBS, but this doesn't hurt.
     setFieldValue('q');
 
     setFieldValue('score');
@@ -231,6 +344,8 @@ document.addEventListener("DOMContentLoaded", function() {
         // Run once on load (shows all by default since input is empty)
         filterVoices();
     }
+
+
 
 
 
