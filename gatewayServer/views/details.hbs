@@ -100,78 +100,34 @@
                 <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                     <h4 class="mb-0">Recent Reviews</h4>
 
-                    <form action="/anime/{{anime.malId}}" method="GET" class="d-flex align-items-center">
+                    <div class="d-flex align-items-center">
                         <label class="me-2 small text-muted fw-bold">Filter:</label>
-                        <select name="score" class="form-select form-select-sm" style="width: 150px;">
-                            <option value="" {{#unless selectedScore}}selected{{/unless}}>All Scores</option>
-                            <option value="10" {{#if (eq selectedScore "10")}}selected{{/if}}>10 - Masterpiece</option>
-                            <option value="9" {{#if (eq selectedScore "9")}}selected{{/if}}>9 - Great</option>
-                            <option value="8" {{#if (eq selectedScore "8")}}selected{{/if}}>8 - Very Good</option>
-                            <option value="7" {{#if (eq selectedScore "7")}}selected{{/if}}>7 - Good</option>
-                            <option value="6" {{#if (eq selectedScore "6")}}selected{{/if}}>6 - Fine</option>
-                            <option value="5" {{#if (eq selectedScore "5")}}selected{{/if}}>5 - Average</option>
-                            <option value="4" {{#if (eq selectedScore "4")}}selected{{/if}}>4 - Bad</option>
-                            <option value="3" {{#if (eq selectedScore "3")}}selected{{/if}}>3 - Very Bad</option>
-                            <option value="2" {{#if (eq selectedScore "2")}}selected{{/if}}>2 - Horrible</option>
-                            <option value="1" {{#if (eq selectedScore "1")}}selected{{/if}}>1 - Appalling</option>
+
+                        <select id="reviewFilter" class="form-select form-select-sm" style="width: 150px;" onchange="filterReviews(this.value)">
+                            <option value="">All Scores</option>
+                            <option value="10">10 - Masterpiece</option>
+                            <option value="9">9 - Great</option>
+                            <option value="8">8 - Very Good</option>
+                            <option value="7">7 - Good</option>
+                            <option value="6">6 - Fine</option>
+                            <option value="5">5 - Average</option>
+                            <option value="4">4 - Bad</option>
+                            <option value="3">3 - Very Bad</option>
+                            <option value="2">2 - Horrible</option>
+                            <option value="1">1 - Appalling</option>
                         </select>
-                        <button type="submit" class="btn btn-sm btn-primary ms-2">Go</button>
-                    </form>
+                    </div>
                 </div>
 
-                <div class="row">
-                    {{#if reviews}}
-                        {{#each reviews}}
-                            <div class="col-md-6 mb-3">
-                                <div class="card h-100 border-0 shadow-sm">
-                                    <div class="card-body py-2">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-
-                                            <a href="#" class="text-decoration-none fw-bold text-primary"
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#userProfileModal"
-                                               data-username="{{this.username}}"
-                                               data-gender="{{this.userProfile.gender}}"
-                                               data-location="{{this.userProfile.location}}"
-                                               data-joined="{{this.userProfile.joined}}"
-                                               data-watching="{{this.userProfile.watching}}"
-                                               data-completed="{{this.userProfile.completed}}"
-                                               data-onhold="{{this.userProfile.on_hold}}"
-                                               data-dropped="{{this.userProfile.dropped}}"
-                                               data-plans="{{this.userProfile.plan_to_watch}}"
-                                               onclick="populateModal(this)">
-                                                @{{this.username}}
-                                            </a>
-
-                                            <span class="badge bg-secondary">{{this.score}} / 10</span>
-                                        </div>
-                                        <div class="small text-muted d-flex gap-3">
-                                            <span><i class="bi bi-play-circle"></i> {{this.status}}</span>
-                                            <span><i class="bi bi-collection"></i> {{#if this.num_watched_episodes}} {{this.num_watched_episodes}} {{else}} ? {{/if}} eps</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {{/each}}
-                    {{else}}
-                        <div class="col-12 text-center text-muted py-4">No reviews found on this page.</div>
-                    {{/if}}
+                <div id="reviewsContainer" class="row">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading reviews...</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="d-flex justify-content-center mt-3">
-                    <nav aria-label="Reviews navigation">
-                        <ul class="pagination pagination-sm">
-                            <li class="page-item {{#unless showPrevReviews}}disabled{{/unless}}">
-                                <a class="page-link" href="/anime/{{anime.malId}}?score={{selectedScore}}&page={{reviewsPrev}}">Previous</a>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link text-muted">Page {{reviewsPage}}</span>
-                            </li>
-                            <li class="page-item {{#unless showNextReviews}}disabled{{/unless}}">
-                                <a class="page-link" href="/anime/{{anime.malId}}?score={{selectedScore}}&page={{reviewsNext}}">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
+                <div id="reviewsPagination" class="d-flex justify-content-center mt-3">
                 </div>
             </div>
 

@@ -13,25 +13,13 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
         const animeData = animeResponse.data;
 
 
-        const [stats, reviews, recs, characters, staff, voices] = await Promise.all([
+        const [stats, recs, characters, staff, voices] = await Promise.all([
             // Stats
             axios.get(`${EXP_URL}/stats/${id}`)
                 .then(res => res.data)
                 .catch(err => {
                     console.error(" -> Stats failed:", err.message);
                     return {}; // Return empty stats if failed
-                }),
-
-            // Ratings
-            axios.get(`${EXP_URL}/ratings/${id}`, {
-                    params: {score: scoreFilter,
-                             page: page // <-- passing the page
-                    }
-                })
-                .then(res => res.data)
-                .catch(err => {
-                    console.error(" -> Reviews failed:", err.message);
-                    return []; // Return empty ratings if failed
                 }),
 
             // Recommendations
@@ -67,23 +55,6 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
                 }),
         ]);
 
-        // =========================================================
-        // USER DETAILS LOGIC
-        // =========================================================
-
-        if (reviews && reviews.length > 0) {
-            // We replace the original 'reviews' array with a new "Enriched" array
-            // that contains the user profile inside each review object
-            await Promise.all(reviews.map(async (review) => {
-                try {
-                    // Fetch profile for THIS specific review's username
-                    const userRes = await axios.get(`${EXP_URL}/users/${review.username}`);
-                    review.userProfile = userRes.data; // Attach profile to the review object
-                } catch (err) {
-                    review.userProfile = null; // Handle missing users safely
-                }
-            }));
-        }
 
         // =========================================================
         // ANIME RECOMMENDATIONS LOGIC
@@ -115,7 +86,6 @@ exports.getFullAnimeDetails = async (id, scoreFilter, page = 1) => {
         return {
             animeData: animeData,
             stats: stats,
-            ratings: reviews,
             characters: characters,
             staff: staff,
             voices: voices,
