@@ -138,6 +138,58 @@ router.get('/api/reviews/:animeId', async function(req, res) {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+
+    /* gatewayServer/routes/index.js */
+
+// 5. GET User Favorites (Resolved with Images/Titles)
+    // GET User Favorites (Resolved with Images/Titles)
+    router.get('/api/users/:username/favorites', async (req, res) => {
+        try {
+            const { username } = req.params;
+
+            // 1. Get User's Favorites from Node Service
+            const favsResponse = await axios.get(`http://127.0.0.1:3001/api/favs/${username}`);
+            const favData = favsResponse.data;
+
+            // --- DEBUG: Log what we got ---
+            // console.log(`[Gateway] Node response:`, favData);
+
+            // 2. Extract IDs
+            // Your controller returns: { username: "...", count: X, favs: [id1, id2, ...] }
+            let ids = [];
+
+            if (favData && Array.isArray(favData.favs)) {
+                // The controller already mapped them to IDs! We just take them.
+                ids = favData.favs;
+            } else {
+                console.log("[Gateway] No 'favs' array found in response.");
+                return res.json([]);
+            }
+
+            // Limit to 5 for the modal
+            ids = ids.slice(0, 5);
+
+            if (ids.length === 0) {
+                return res.json([]);
+            }
+
+            // 3. Resolve details using the Java Service
+            // We pass the IDs directly since they are already numbers
+            const detailsResponse = await axios.get(`http://127.0.0.1:8080/api/animes/batch`, {
+                params: { ids: ids.join(',') }
+            });
+
+            // 4. Return the resolved list (images, titles, etc.)
+            res.json(detailsResponse.data);
+
+        } catch (err) {
+            if (err.response && err.response.status === 404) {
+                return res.json([]);
+            }
+            console.error("Error fetching user favorites:", err.message);
+            res.json([]);
+        }
+    });
 });
 
 module.exports = router;

@@ -3,8 +3,10 @@
 // =========================================================
 
 // --- MODAL LOGIC (User) ---
-function populateModal(element) {
+async function populateModal(element) {
     const data = element.dataset;
+
+    //1. Fill the basic infos
     //document.getElementById('modalUsername').innerText = data.username;
     document.getElementById('modalUsernameDisplay').innerText = data.username;
     document.getElementById('modalLocation').innerHTML = `<i class="bi bi-geo-alt"></i> ${data.location}`;
@@ -17,6 +19,58 @@ function populateModal(element) {
     document.getElementById('modalOnHold').innerText = data.onhold;
     document.getElementById('modalDropped').innerText = data.dropped;
     document.getElementById('modalPlans').innerText = data.plans;
+
+
+    // 2. LOAD FAVORITES (Async + Clickable Images)
+
+    const favContainer = document.getElementById('modalFavorites');
+
+
+    if (favContainer) {
+        // Show Loading Spinner initially
+        favContainer.innerHTML = '<div class="spinner-border spinner-border-sm text-primary"></div>';
+
+        try {
+            // Call the Gateway Route we just created
+            const res = await axios.get(`/api/users/${data.username}/favorites`);
+            const animes = res.data;
+
+            favContainer.innerHTML = ''; // Clear spinner
+
+            if (animes.length === 0) {
+                favContainer.innerHTML = '<span class="text-muted small fst-italic">No favorites found.</span>';
+                return;
+            }
+
+            // Render Clickable Images
+            animes.forEach(anime => {
+                const html = `
+                    <a href="/anime/${anime.malId}" class="text-decoration-none text-dark card hover-shadow border-0 bg-light">
+                        <div class="card-body p-2 d-flex align-items-center">
+                            
+                            <img src="${anime.imageUrl}" class="rounded border bg-white" 
+                                 style="width: 50px; height: 70px; object-fit: cover; flex-shrink: 0;">
+                            
+                            <div class="ms-3 overflow-hidden">
+                                <h6 class="mb-0 text-truncate fw-bold" title="${anime.title}">
+                                    ${anime.title}
+                                </h6>
+                            </div>
+
+                            <div class="ms-auto text-muted">
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+                        </div>
+                    </a>
+                `;
+                favContainer.insertAdjacentHTML('beforeend', html);
+            });
+
+        } catch (err) {
+            console.error("Error loading favorites:", err);
+            favContainer.innerHTML = '<span class="text-danger small">Failed to load.</span>';
+        }
+    }
 }
 
 // --- MODAL LOGIC (Staff) ---
