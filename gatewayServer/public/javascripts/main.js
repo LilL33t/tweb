@@ -5,17 +5,18 @@
 // --- MODAL LOGIC (User) ---
 function populateModal(element) {
     const data = element.dataset;
-    document.getElementById('modalUsername').innerText = data.username || 'User';
-    document.getElementById('modalUsernameDisplay').innerText = data.username || 'User';
-    document.getElementById('modalLocation').innerHTML = `<i class="bi bi-geo-alt"></i> ${data.location || 'Unknown'}`;
-    document.getElementById('modalGender').innerHTML = `<i class="bi bi-gender-ambiguous"></i> ${data.gender || '?'}`;
-    document.getElementById('modalJoined').innerHTML = `<i class="bi bi-calendar"></i> Joined: ${data.joined || '?'}`;
+    //document.getElementById('modalUsername').innerText = data.username;
+    document.getElementById('modalUsernameDisplay').innerText = data.username;
+    document.getElementById('modalLocation').innerHTML = `<i class="bi bi-geo-alt"></i> ${data.location}`;
+    document.getElementById('modalGender').innerHTML = `<i class="bi bi-gender-ambiguous"></i> ${data.gender}`;
+    document.getElementById('modalJoined').innerHTML = `<i class="bi bi-calendar"></i> Joined: ${data.joined}`;
+    document.getElementById('modalBirthday').innerHTML = `<i class="bi bi-gift"></i> ${data.birthday}`;
 
-    document.getElementById('modalWatching').innerText = data.watching || '0';
-    document.getElementById('modalCompleted').innerText = data.completed || '0';
-    document.getElementById('modalOnHold').innerText = data.onhold || '0';
-    document.getElementById('modalDropped').innerText = data.dropped || '0';
-    document.getElementById('modalPlans').innerText = data.plans || '0';
+    document.getElementById('modalWatching').innerText = data.watching;
+    document.getElementById('modalCompleted').innerText = data.completed;
+    document.getElementById('modalOnHold').innerText = data.onhold;
+    document.getElementById('modalDropped').innerText = data.dropped;
+    document.getElementById('modalPlans').innerText = data.plans;
 }
 
 // --- MODAL LOGIC (Staff) ---
@@ -200,10 +201,11 @@ async function filterReviews(score, page = 1) {
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <a href="#" class="text-decoration-none fw-bold text-primary"
                                    data-bs-toggle="modal" data-bs-target="#userProfileModal"
-                                   data-username="${username}"
-                                   data-gender="${user.gender || '?'}"
-                                   data-location="${user.location || 'Unknown'}"
-                                   data-joined="${user.joined || '?'}"
+                                   data-username="${username || 'User'}"
+                                   data-gender="${user.gender || 'Unknown gender'}"
+                                   data-birthday="${user.birthday || 'Unknown birthday'}"
+                                   data-location="${user.location || 'Unknown location'}"
+                                   data-joined="${user.joined || 'Unknown join date'}"
                                    data-watching="${user.watching || 0}"
                                    data-completed="${user.completed || 0}"
                                    data-onhold="${user.on_hold || 0}"
