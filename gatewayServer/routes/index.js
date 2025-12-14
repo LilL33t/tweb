@@ -79,18 +79,23 @@ router.get('/api/reviews/:animeId', async function(req, res) {
     try {
         const { animeId } = req.params;
         const { score } = req.query;
+        // 1. Get page from query (default to 1)
+        const page = parseInt(req.query.page) || 1;
 
-        // 1. Log to Gateway Terminal to prove request arrived
-        console.log(`[Gateway] Fetching reviews for ID: ${animeId}`);
+        console.log(`[Gateway] Fetching reviews for ID: ${animeId}, Page: ${page}`);
 
-        // Call Node Service
+        // 2. Call Node Service WITH PAGE PARAM
+        // Note: Your internal service (Port 3001) must support ?page=X
         const response = await axios.get(`http://127.0.0.1:3001/api/ratings/${animeId}`, {
-            params: { score: score }
+            params: {
+                score: score,
+                page: page // <--- Forwarding the page
+            }
         });
 
         const reviews = response.data;
 
-        // Enrich with User Profiles (Moved here from Aggregator)
+        // 3. Enrich with User Profiles
         if (reviews && reviews.length > 0) {
             await Promise.all(reviews.map(async (review) => {
                 try {

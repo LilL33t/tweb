@@ -165,29 +165,41 @@ async function searchAnimes(page = 1) {
     }
 }
 
-// --- REVIEW FILTER LOGIC (Client-Side) ---
-async function filterReviews(score) {
-    // Robust ID extraction
+// --- REVIEW FILTER LOGIC (Client-Side with Pagination) ---
+async function filterReviews(score, page = 1) {
+    // 1. Get ID robustly
     const pathParts = window.location.pathname.split('/').filter(p => p !== '');
     const animeId = pathParts[pathParts.length - 1];
 
+    // Get Containers
     const container = document.getElementById('reviewsContainer');
+    const pagContainer = document.getElementById('reviewsPagination');
+
     if(!container) return;
 
+    // 2. Visual Loading State
     container.style.opacity = '0.5';
+    // If getting a new score filter, reset page to 1 (handled by onclick in HTML)
 
     try {
+        // 3. Fetch from Gateway
         const res = await axios.get(`/api/reviews/${animeId}`, {
-            params: { score: score }
+            params: {
+                score: score,
+                page: page // <--- Sending Page
+            }
         });
 
         const reviews = res.data;
         container.innerHTML = '';
+        if(pagContainer) pagContainer.innerHTML = ''; // Clear old buttons
 
+        // 4. Handle Empty
         if (reviews.length === 0) {
-            container.innerHTML = '<div class="col-12 text-center text-muted py-4">No reviews found.</div>';
+            container.innerHTML = '<div class="col-12 text-center text-muted py-4">No reviews found on this page.</div>';
         }
 
+        // 5. Render Reviews
         reviews.forEach(review => {
             const user = review.userProfile || {};
             const username = review.username || 'User';
@@ -225,6 +237,49 @@ async function filterReviews(score) {
                 </div>`;
             container.insertAdjacentHTML('beforeend', html);
         });
+
+        // 6. RENDER PAGINATION BUTTONS
+        if (pagContainer) {
+            // Logic: Assume if we got exactly 6 items (or whatever your limit is), there might be a next page
+            // Adjust '6' to whatever your Internal Node Service limit is.
+            const limit = 6;
+            const hasNext = reviews.length === limit;
+            const prevPage = page > 1 ? page - 1 : null;
+            const nextPage = hasNext ? page + 1 : null;
+
+            // We need to keep the current score filter for the buttons
+            // (Note: score needs quotes in the onclick string)
+            const safeScore = score ? `'${score}'` : "''";
+
+            let buttonsHTML = '';
+
+            // Previous Button
+            buttonsHTML += `
+                <li class="page-item ${!prevPage ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="filterReviews(${safeScore}, ${prevPage}); return false;">
+                        Previous
+                    </a>
+                </li>
+            `;
+
+            // Current Page Text
+            buttonsHTML += `
+                <li class="page-item disabled">
+                    <span class="page-link text-muted">Page ${page}</span>
+                </li>
+            `;
+
+            // Next Button
+            buttonsHTML += `
+                <li class="page-item ${!nextPage ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="filterReviews(${safeScore}, ${nextPage}); return false;">
+                        Next
+                    </a>
+                </li>
+            `;
+
+            pagContainer.innerHTML = buttonsHTML;
+        }
 
     } catch (err) {
         console.error(err);
