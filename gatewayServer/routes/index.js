@@ -192,4 +192,20 @@ router.get('/api/reviews/:animeId', async function(req, res) {
     });
 });
 
+/* 6. API: GET Character Details (About Text) */
+router.get('/api/characters/:id', async function(req, res) {
+    try {
+        const { id } = req.params;
+
+        // Forward request to Spring Boot (JPA)
+        const response = await axios.get(`http://127.0.0.1:8080/api/characters/${id}`);
+
+        res.json(response.data);
+    } catch (err) {
+        console.error(`Error fetching character ${req.params.id}:`, err.message);
+        res.status(500).json({ error: "Failed to fetch character details" });
+    }
+});
+
+
 module.exports = router;

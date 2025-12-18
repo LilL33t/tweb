@@ -141,6 +141,51 @@ function populateVoiceModal(element) {
     }
 }
 
+
+// --- MODAL LOGIC (Characters) ---
+async function populateCharModal(element) {
+    const data = element.dataset;
+    const charId = data.id;
+
+    // 1. Set Image & Basic Info (Instant)
+    const imgEl = document.getElementById('charModalImg');
+    if (imgEl) {
+        const hasImage = data.image && data.image !== "null" && data.image !== "";
+        imgEl.src = hasImage ? data.image : 'https://via.placeholder.com/150';
+    }
+    document.getElementById('charModalName').innerText = data.name || 'Unknown';
+    document.getElementById('charModalRole').innerText = data.role || 'Main';
+
+    // Reset Favorites to 0 or loading while fetching
+    document.getElementById('charModalFavs').innerText = "-";
+
+    // 2. Set Loading State for Description
+    const aboutContainer = document.getElementById('charModalAbout');
+    aboutContainer.innerHTML = '<div class="spinner-border spinner-border-sm text-primary"></div> Loading details...';
+
+    // 3. Fetch Data via Axios
+    try {
+        const response = await axios.get(`/api/characters/${charId}`);
+        const charData = response.data;
+
+        // --- A. Update About Text ---
+        const aboutText = (charData.about && charData.about.trim() !== "")
+            ? charData.about
+            : "No description available for this character.";
+        aboutContainer.innerText = aboutText;
+
+        // --- B. Update Favorites (Format with commas) ---
+        // If charData.favorites is null/undefined, show 0
+        const favCount = charData.favorites || 0;
+        document.getElementById('charModalFavs').innerText = favCount.toLocaleString();
+
+    } catch (error) {
+        console.error("Error fetching character details:", error);
+        aboutContainer.innerText = "Error loading description.";
+        document.getElementById('charModalFavs').innerText = "0";
+    }
+}
+
 // --- CLIENT-SIDE SEARCH (For Main Grid) ---
 async function searchAnimes(page = 1) {
     if (!page || page < 1) page = 1;

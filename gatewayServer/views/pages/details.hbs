@@ -239,8 +239,19 @@
                 <div class="tab-pane fade" id="chars">
                     <div class="row" id="charGrid">
                         {{#each characters}}
-                            <div class="col-md-6 mb-2 char-card">
-                                <div class="d-flex align-items-center border rounded p-2 h-100">
+                            <div class="col-md-6 mb-2 char-card"
+                                 style="cursor: pointer;"
+
+                                 data-id="{{this.id}}"
+                                 data-name="{{this.name}}"
+                                 data-role="{{this.role}}"
+                                 data-image="{{this.imageUrl}}"
+
+                                 onclick="populateCharModal(this)"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#charModal">
+
+                                <div class="d-flex align-items-center border rounded p-2 h-100 hover-shadow">
                                     <img src="{{this.imageUrl}}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" class="me-2">
                                     <div>
                                         <strong>{{this.name}}</strong>
@@ -395,5 +406,38 @@
 
             </div>
         </div>
+    </div>
+</div>
+
+<div class="modal fade" id="charModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg"> <div class="modal-content border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center pt-0">
+
+            <img id="charModalImg" src="" class="rounded-circle shadow mb-3"
+                 style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff;">
+
+            <h4 id="charModalName" class="fw-bold mb-1">Character Name</h4>
+            <p id="charModalRole" class="text-primary small mb-3 fw-bold">Role</p>
+
+            <div class="d-flex justify-content-center mb-4">
+                <div class="p-2 bg-light rounded border px-4">
+                    <i class="bi bi-heart-fill text-danger"></i>
+                    <span class="small text-muted ms-1">Favorites</span>
+                    <div class="fw-bold fs-5" id="charModalFavs">0</div>
+                </div>
+            </div>
+
+            <div class="text-start bg-light p-3 rounded border">
+                <h6 class="text-uppercase text-muted small fw-bold mb-2">About</h6>
+                <p id="charModalAbout" class="text-muted small mb-0" style="white-space: pre-wrap;">
+                    Loading...
+                </p>
+            </div>
+
+        </div>
+    </div>
     </div>
 </div>
