@@ -3,11 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var hbs = require('hbs');
 
-hbs.registerHelper('eq', function (a, b) {
-    return a == b;
-});
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -16,8 +12,35 @@ var apiRouter = require('./routes/api');
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+const { engine } = require('express-handlebars');
+
+// view engine setup
+app.engine('hbs', engine({
+    extname: '.hbs',
+    defaultLayout: 'layout',
+    layoutsDir: path.join(__dirname, 'views/layouts'),   // Points to views/layouts
+    partialsDir: path.join(__dirname, 'views/partials'), // Points to views/partials
+
+    // 1. To solve error: Handlebars: Access has been denied to resolve the property "status" because it is not an "own property" of its parent.
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+    },
+
+    // Define helpers here directly
+    helpers: {
+        eq: function (a, b) {
+            return a == b;
+        }
+    }
+}));
+
 app.set('view engine', 'hbs');
+
+app.set('views', path.join(__dirname, 'views/pages'));
+
+
+
 
 app.use(logger('dev'));
 app.use(express.json());
