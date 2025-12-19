@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ============================================
-    // UNIVERSAL CLIENT-SIDE PAGINATION (Voice, Staff, Chars)
+    // UNIVERSAL CLIENT-SIDE FAKE PAGINATION (Voice, Staff, Chars)
     // ============================================
 
     function setupClientPagination(cardClass, paginationId, inputId = null, itemsPerPage = 10) {
