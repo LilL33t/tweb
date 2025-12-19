@@ -1,0 +1,22 @@
+<div class="card bg-light mb-4 border-0">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Score Distribution</h5>
+
+            <span class="badge bg-white text-muted border shadow-sm">
+                            <i class="bi bi-people-fill me-1"></i> {{totalVotes}} votes
+                        </span>
+
+        </div>
+
+        {{#each scoreDistribution}}
+            <div class="d-flex align-items-center mb-1 score-row" style="font-size: 0.9rem;">
+                <span class="fw-bold me-2" style="width: 20px;">{{this.score}}</span>
+                <div class="progress flex-grow-1" style="height: 10px;">
+                    <div class="progress-bar bg-{{this.color}}" role="progressbar" style="width: {{this.percentage}}%"></div>
+                </div>
+                <span class="ms-2 text-muted small" style="width: 80px; text-align: right;">{{this.percentage}}%</span>
+            </div>
+        {{/each}}
+    </div>
+</div>

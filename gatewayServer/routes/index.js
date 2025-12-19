@@ -167,7 +167,7 @@ router.get('/api/reviews/:animeId', async function(req, res) {
             }
 
             // Limit to 5 for the modal
-            ids = ids.slice(0, 5);
+            //ids = ids.slice(0, 5);
 
             if (ids.length === 0) {
                 return res.json([]);

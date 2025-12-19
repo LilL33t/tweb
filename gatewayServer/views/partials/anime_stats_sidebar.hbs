@@ -1,0 +1,15 @@
+<img src="{{anime.imageUrl}}" class="img-fluid rounded shadow mb-3" style="width: 100%;">
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">Statistics</div>
+    <ul class="list-group list-group-flush small">
+        <li class="list-group-item"><strong>Type:</strong> {{anime.type}}</li>
+        <li class="list-group-item"><strong>Episodes:</strong> {{anime.episodes}}</li>
+        <li class="list-group-item"><strong>Status:</strong> {{anime.status}}</li>
+        <li class="list-group-item"><strong>Favorites:</strong> {{anime.favorites}}</li>
+        <li class="list-group-item"><strong>Score:</strong> <span class="badge bg-warning text-dark">{{anime.score}}</span></li>
+        <li class="list-group-item"><strong>Watching:</strong> {{stats.watching}}</li>
+        <li class="list-group-item"><strong>Completed:</strong> {{stats.completed}}</li>
+        <li class="list-group-item"><strong>Total Views:</strong> {{stats.total}}</li>
+    </ul>
+</div>
