@@ -55,7 +55,7 @@ public class Anime{
     @Column(name = "rating")
     private String rating;
 
-    @Column(name = "producers")
+    @Column(name = "producers", columnDefinition = "TEXT")
     private String producers;
 
 
