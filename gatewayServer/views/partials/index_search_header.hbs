@@ -1,0 +1,90 @@
+<header class="sticky-top shadow-sm" style="z-index: 1020;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#searchControls">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="searchControls">
+                <div class="d-flex flex-column flex-lg-row w-100 gap-2 align-items-lg-center ms-lg-4">
+
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control border-0" placeholder="Search 28k+ anime..." value="{{searchParams.q}}">
+                        <button class="btn btn-primary" type="button" onclick="searchAnimes(1)">Search</button>
+                    </div>
+
+                    <a href="/" class="btn btn-outline-light text-nowrap">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                    </a>
+
+                    <button class="btn btn-secondary d-lg-none mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterBar">
+                        Show Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="filterBar" class="bg-light border-bottom collapse d-lg-block">
+        <div class="container py-2">
+            <div class="row g-2 align-items-center">
+
+                <div class="col-6 col-md-3">
+                    <select id="genreSelect" class="form-select form-select-sm fw-bold text-secondary">
+                        <option value="">All Genres</option>
+                        <option value="Action">Action</option>
+                        <option value="Adventure">Adventure</option>
+                        <option value="Avant Garde">Avant Garde</option>
+                        <option value="Award Winning">Award Winning</option>
+                        <option value="Boys Love">Boys Love</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Ecchi">Ecchi</option>
+                        <option value="Erotica">Erotica</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Girls Love">Girls Love</option>
+                        <option value="Gourmet">Gourmet</option>
+                        <option value="Hentai">Hentai</option>
+                        <option value="Horror">Horror</option>
+                        <option value="Mystery">Mystery</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Sci-Fi">Sci-Fi</option>
+                        <option value="Slice of Life">Slice of Life</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Supernatural">Supernatural</option>
+                        <option value="Suspense">Suspense</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <select id="ratingSelect" class="form-select form-select-sm fw-bold text-secondary">
+                        <option value="">Any Rating</option>
+                        <option value="PG - Children">PG - Children</option>
+                        <option value="PG-13 - Teens 13 or older">PG-13 - Teens 13 or older</option>
+                        <option value="Rx - Hentai">Rx - Hentai</option>
+                        <option value="G - All Ages">G - All Ages</option>
+                        <option value="R - 17+ (violence & profanity)">R - 17+ (violence & profanity)</option>
+                        <option value="R+ - Mild Nudity">R+ - Mild Nudity</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-2">
+                    <select id="minScoreSelect" class="form-select form-select-sm fw-bold text-secondary">
+                        <option value="">Min Score: Any</option>
+                        <option value="9">9+</option>
+                        <option value="8">8+</option>
+                        <option value="7">7+</option>
+                        <option value="6">6+</option>
+                        <option value="5">5+</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-2 d-grid">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="searchAnimes(1)">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

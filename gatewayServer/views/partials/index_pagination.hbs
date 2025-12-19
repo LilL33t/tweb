@@ -1,0 +1,21 @@
+<nav aria-label="Page navigation" class="mt-5 mb-5">
+    <ul id="paginationContainer" class="pagination justify-content-center">
+
+        <li class="page-item {{#unless showPrev}}disabled{{/unless}}">
+            <a class="page-link" href="#" onclick="searchAnimes({{prevPage}}); return false;">
+                <i class="bi bi-chevron-left"></i> Previous
+            </a>
+        </li>
+
+        <li class="page-item disabled">
+            <span class="page-link text-muted">Page {{currentPage}}</span>
+        </li>
+
+        <li class="page-item">
+            <a class="page-link" href="#" onclick="searchAnimes({{nextPage}}); return false;">
+                Next <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+
+    </ul>
+</nav>

@@ -8,7 +8,7 @@
 
     <div class="row">
         <div class="col-md-3">
-            {{> anime_stats_sidebar}}
+            {{> details_anime_stats_sidebar}}
         </div>
 
         <div class="col-md-9">
@@ -38,7 +38,7 @@
                 </div>
             </div>
 
-            {{> score_chart }}
+            {{> details_score_chart }}
 
             {{#if recommendations}}
                 <div class="mt-5 mb-5">
@@ -67,15 +67,15 @@
                 </div>
             {{/if}}
 
-            {{> reviews_section }}
-            {{> tab_content_grid }}
+            {{> details_reviews_section }}
+            {{> details_tab_content_grid }}
 
         </div>
     </div>
 </div>
 
-{{> modal_user }}
-{{> modal_voice }}
-{{> modal_staff }}
-{{> modal_char }}
+{{> details_modal_user }}
+{{> details_modal_voice }}
+{{> details_modal_staff }}
+{{> details_modal_char }}
 

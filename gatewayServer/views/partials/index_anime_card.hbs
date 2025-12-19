@@ -1,0 +1,19 @@
+<div class="card h-100 shadow-sm border-0 hover-card">
+    <div style="height: 320px; overflow: hidden; position: relative;">
+        <img src="{{this.imageUrl}}" class="card-img-top h-100 w-100" style="object-fit: cover;" alt="{{this.title}}">
+        {{#if this.score}}
+            <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-warning text-dark shadow-sm">
+                                <i class="bi bi-star-fill"></i> {{this.score}}
+                            </span>
+            </div>
+        {{/if}}
+    </div>
+    <div class="card-body d-flex flex-column pt-3">
+        <h6 class="card-title text-truncate fw-bold" title="{{this.title}}">{{this.title}}</h6>
+        <p class="card-text text-muted small mb-3 text-truncate">
+            {{#if this.genres}}{{this.genres}}{{else}}Unknown Genre{{/if}}
+        </p>
+        <a href="/anime/{{this.malId}}" class="btn btn-primary btn-sm w-100 mt-auto stretched-link">Details</a>
+    </div>
+</div>
