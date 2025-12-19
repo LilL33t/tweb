@@ -190,7 +190,8 @@ async function populateCharModal(element) {
 async function searchAnimes(page = 1) {
     if (!page || page < 1) page = 1;
 
-    const query = document.getElementById('searchInput').value;
+    // 1. Get Input Values
+    const query = document.getElementById('searchInput').value.trim();
     const genre = document.getElementById('genreSelect').value;
     const rating = document.getElementById('ratingSelect').value;
     const minScore = document.getElementById('minScoreSelect').value;
@@ -202,26 +203,49 @@ async function searchAnimes(page = 1) {
     grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>';
 
     try {
-        const urlParams = new URLSearchParams();
-        if(query) urlParams.set('q', query);
-        if(genre) urlParams.set('genre', genre);
-        if(rating) urlParams.set('rating', rating);
-        if(minScore) urlParams.set('min_score', minScore);
-        urlParams.set('page', page);
-        window.history.pushState({}, '', '?' + urlParams.toString());
+        // 2. CHECK: Are any filters active?
+        const isFiltering = query !== "" || genre !== "" || rating !== "" || minScore !== "";
 
-        const response = await axios.get('/api/search', {
-            params: { q: query, title: query, genre, rating, minScore, page }
+        let endpoint = '/api/top'; // Default to TOP animes
+        let requestParams = { page: page };
+
+        // 3. IF filters are active, switch to SEARCH mode
+        if (isFiltering) {
+            endpoint = '/api/search';
+            requestParams = {
+                q: query, title: query,
+                genre, rating, minScore, page
+            };
+
+            // Update URL only if searching (optional)
+            const urlParams = new URLSearchParams();
+            if(query) urlParams.set('q', query);
+            if(genre) urlParams.set('genre', genre);
+            if(rating) urlParams.set('rating', rating);
+            if(minScore) urlParams.set('min_score', minScore);
+            urlParams.set('page', page);
+            window.history.pushState({}, '', '?' + urlParams.toString());
+        }
+
+        // 4. CALL THE CORRECT API
+        const response = await axios.get(endpoint, {
+            params: requestParams
         });
 
         const animes = response.data;
         grid.innerHTML = '';
 
+        // ... (The rest of your rendering logic remains EXACTLY the same) ...
+
         if (animes && animes.length > 0) {
-            if(document.getElementById('resultCount'))
-                document.getElementById('resultCount').innerText = `${animes.length} Results on this page`;
+            if(document.getElementById('resultCount')) {
+                // Update the title dynamically
+                const title = isFiltering ? `${animes.length} Search Results` : "Top Ranked Anime";
+                document.getElementById('resultCount').innerText = title;
+            }
 
             animes.forEach(anime => {
+                // ... card HTML generation ...
                 const card = `
                 <div class="col">
                     <div class="card h-100 shadow-sm border-0 hover-card">
@@ -239,27 +263,29 @@ async function searchAnimes(page = 1) {
                 grid.insertAdjacentHTML('beforeend', card);
             });
 
-            // Re-render Pagination
-            const hasNext = animes.length >= 12;
+            // ... Pagination logic remains the same ...
+            const hasNext = animes.length >= 12; // Assuming 12 is your page size
             const prevPage = page > 1 ? page - 1 : null;
             const nextPage = hasNext ? page + 1 : null;
 
             if(pagContainer) {
                 pagContainer.innerHTML = `
-                    <li class="page-item ${!prevPage ? 'disabled' : ''}">
-                        <a class="page-link" href="#" onclick="searchAnimes(${prevPage}); return false;"><i class="bi bi-chevron-left"></i> Previous</a>
-                    </li>
-                    <li class="page-item disabled"><span class="page-link text-muted">Page ${page}</span></li>
-                    <li class="page-item ${!nextPage ? 'disabled' : ''}">
-                        <a class="page-link" href="#" onclick="searchAnimes(${nextPage}); return false;">Next <i class="bi bi-chevron-right"></i></a>
-                    </li>`;
+                     <li class="page-item ${!prevPage ? 'disabled' : ''}">
+                         <a class="page-link" href="#" onclick="searchAnimes(${prevPage}); return false;"><i class="bi bi-chevron-left"></i> Previous</a>
+                     </li>
+                     <li class="page-item disabled"><span class="page-link text-muted">Page ${page}</span></li>
+                     <li class="page-item ${!nextPage ? 'disabled' : ''}">
+                         <a class="page-link" href="#" onclick="searchAnimes(${nextPage}); return false;">Next <i class="bi bi-chevron-right"></i></a>
+                     </li>`;
             }
         } else {
+            // ... empty state logic ...
             grid.innerHTML = '<div class="col-12 text-center text-muted py-5"><h4>No results found</h4></div>';
             if(pagContainer) pagContainer.innerHTML = '';
         }
+
     } catch (error) {
-        console.error("Search failed:", error);
+        console.error("Search/Fetch failed:", error);
         grid.innerHTML = '<div class="col-12 text-center text-danger py-5">Error loading results.</div>';
     }
 }

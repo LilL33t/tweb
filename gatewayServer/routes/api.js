@@ -85,4 +85,18 @@ router.get('/characters/:id', async function(req, res) {
     }
 });
 
+/* 5. TOP ANIME API (For Homepage Pagination) */
+router.get('/top', async function(req, res) {
+    try {
+        const page = req.query.page || 1;
+        // Forward to the same JPA endpoint your Homepage uses
+        const response = await axios.get(`${JPA_URL}/animes/top`, {
+            params: { page: page }
+        });
+        res.json(response.data);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch top anime" });
+    }
+});
+
 module.exports = router;
