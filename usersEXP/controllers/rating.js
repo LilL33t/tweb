@@ -5,7 +5,7 @@ exports.getRatingByAnime = async (req, res) => {
 
     try {
         const animeId = parseInt(req.params.animeId);
-        const requestedScore = req.query.score; // Get the score from URL (e.g. ?score=10)
+        const requestedScore = req.query.score;
 
         // 1. Pagination Config
         // Default to Page 1, Limit 6 items per page (fits 2 rows of 3 columns nicely)

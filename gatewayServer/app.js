@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 
 var indexRouter = require('./routes/index');
@@ -39,6 +41,25 @@ app.set('view engine', 'hbs');
 
 app.set('views', path.join(__dirname, 'views/pages'));
 
+// Swagger Configuration
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Anime Gateway API',
+            version: '1.0.0',
+            description: 'API Gateway that aggregates data from SQL (Java) and NoSQL (Node)',
+        },
+        servers: [
+            { url: 'http://localhost:3000', description: 'Gateway Server' }
+        ],
+    },
+    apis: ['./routes/*.js'],
+};
+
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
 
 
 
@@ -47,6 +68,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Mount routers
 app.use('/', indexRouter);
